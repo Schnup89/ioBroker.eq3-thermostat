@@ -1,0 +1,153 @@
+<html>
+
+<head>
+
+    <!-- Load ioBroker scripts and styles-->
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+
+    <!-- Load our own files -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="words.js"></script>
+
+    <script type="text/javascript">
+
+        // This will be called by the admin adapter when the settings page loads
+        var getEQ3Devices = [];  //TT, Array4Table 
+        function load(settings, onChange) {
+            $('#fTestPath').on('click', (function () {
+                sendTo(null, 'checkEQ3Path', { EQ3Path: document.getElementById("inp_eq3Controller_path").value }, function (response) {
+                    if (response == "true") {
+                        document.getElementById("fTestPath").style="background-color: green;";
+                    } else {
+                        document.getElementById("fTestPath").style="background-color: red;";
+                    }
+                });
+            }));
+            // example: select elements with id=key and class=value and insert value
+            if (!settings) return;
+            $('.value').each(function () {
+                var $key = $(this);
+                var id = $key.attr('id');
+                if ($key.attr('type') === 'checkbox') {
+                    // do not call onChange direct, because onChange could expect some arguments
+                    $key.prop('checked', settings[id])
+                        .on('change', () => onChange())
+                        ;
+                } else {
+                    // do not call onChange direct, because onChange could expect some arguments
+                    $key.val(settings[id])
+                        .on('change', () => onChange())
+                        .on('keyup', () => onChange())
+                        ;
+                }
+            });
+            getEQ3Devices = settings.getEQ3Devices || []; //TT, get DevInfo
+            onChange(false);
+            values2table("getEQ3Devices", getEQ3Devices, onChange);
+            // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+            if (M) M.updateTextFields();
+        }
+
+        // This will be called by the admin adapter when the user presses the save button
+        function save(callback) {
+            // example: select elements with class=value and build settings object
+            var obj = {};
+            $('.value').each(function () {
+                var $this = $(this);
+                if ($this.attr('type') === 'checkbox') {
+                    obj[$this.attr('id')] = $this.prop('checked');
+                } else {
+                    obj[$this.attr('id')] = $this.val();
+                }
+            });
+            obj.getEQ3Devices = table2values("getEQ3Devices");
+            callback(obj);
+        }
+    </script>
+
+    <style>
+        /* Title of each section */
+        .title { font-weight: bold; }
+        /* Info text of each section */
+        .info { margin-left: 1em; }
+        /* Table header */
+        .table-values th { height: 2em; background-color:#2196F3; font-size:90%; }
+        /* Table: Add button */
+        .table-button-add { margin: 0.3em 0 1em 0; }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="m adapter-container">
+
+        <div class="row">
+            <div class="col s12 m4 l2">
+                <img src="eq3-thermostat.png" class="logo">
+            </div>
+        </div>
+
+        <!-- Put your content here -->
+
+        <!-- For example columns with settings: -->
+        
+        <!-- #### SECTION GENERAL -->
+        <div class="row">
+            <div class="col s12">
+                <p class="translate title">lab_general</p>
+                <p class="translate info">text_general</p>
+                <div class="col s6">
+                    <input class="value" id="inp_eq3Controller_path" />
+                    <label for="inp_eq3Controller_path" class="translate">lab_eq3Controller_path</label>
+                </div>
+                <div class="col s6">
+                    <a id="fTestPath" class="btn"><span class="translate">btn_checkPath</span></a>
+                </div>
+            </div>
+            <div class="col s12">
+                <div class="col s6">
+                    <input class="value" id="inp_refresh_interval" type="number" />
+                    <label for="inp_refresh_interval" class="translate">lab_refresh_interval</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- #### SECTION DEVICES -->
+        <div class="row">
+            <div id="tab-getEQ3Devices" class="col s12 page">
+                <p class="translate title">lab_devices</p>
+                <p class="translate info">text_devices</p>
+                <div class="col s12" id="getEQ3Devices">
+                    <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                    <span class="translate info" style="margin-right: 50px;">lab_BtnAddManual</span>
+                    <a class="btn-floating waves-effect waves-light grey table-button-add disabled"><i class="material-icons">settings_bluetooth</i></a>
+                    <span class="translate info">lab_BtnAddScan</span>
+
+                    <div class="table-values-div">
+                        <table class="table-values">
+                            <thead>
+                                <tr>
+                                    <th class="header translate" data-name="eq3MAC">eq3MAC</th>
+                                    <th class="header translate" data-name="eq3Name">eq3Name</th>
+                                    <th class="header translate" data-buttons="delete">delete</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

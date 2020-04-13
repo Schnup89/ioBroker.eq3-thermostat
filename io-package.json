@@ -1,0 +1,77 @@
+{
+    "common": {
+        "name": "eq3-thermostat",
+        "version": "0.0.2",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "eq3-Thermostat",
+        "titleLang": {
+            "en": "eq3-Thermostat",
+            "de": "eq3-Thermostat",
+            "ru": "EQ3 Термостат",
+            "pt": "eq3-Thermostat",
+            "nl": "eq3-thermostaat",
+            "fr": "eq3-Thermostat",
+            "it": "eq3-termostato",
+            "es": "eq3-termostato",
+            "pl": "eq3-Termostat",
+            "zh-cn": "eq3-温控器"
+        },
+        "desc": {
+            "en": "Adapter zur Anbindung von eq3-Thermostaten via Bluetooth",
+            "de": "Adapter zur Bindung von eq3-Thermostaten über Bluetooth",
+            "ru": "Адаптер Zur Anbindung von eq3-Thermostaten через Bluetooth",
+            "pt": "Adaptador para conexão de termostatos eq3 via Bluetooth",
+            "nl": "Adapter voor Anbindung von eq3-Thermostaten via Bluetooth",
+            "fr": "Adaptateur zur Anbindung von eq3-Thermostaten via Bluetooth",
+            "it": "Adapter zur Anbindung von eq3-Thermostaten via Bluetooth",
+            "es": "Adaptador zur Anbindung von eq3-Thermostaten a través de Bluetooth",
+            "pl": "Adapter zur Anbindung von eq3-Thermostaten przez Bluetooth",
+            "zh-cn": "通过蓝牙适配器zur Anbindung von eq3-Thermostaten"
+        },
+        "authors": [
+            "Schnup89 <Tobias_Tsafi@gmx.de>"
+        ],
+        "keywords": [
+            "eq3 eqiva btle bt bluetooth heizung steuerung temperatur"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "messagebox": true,
+        "message": true,
+        "subscribe": "messagebox",
+        "main": "main.js",
+        "icon": "eq3-thermostat.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/Schnup89/ioBroker.eq3-thermostat/master/admin/eq3-thermostat.png",
+        "readme": "https://github.com/Schnup89/ioBroker.eq3-thermostat/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "household",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "poll",
+        "materialize": true,
+        "dependencies": [
+            {
+                "js-controller": ">=1.4.2"
+            }
+        ]
+    },
+    "native": {
+    },
+    "objects": [],
+    "instanceObjects": []
+}
