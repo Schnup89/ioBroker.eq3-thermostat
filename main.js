@@ -242,7 +242,7 @@ class Eq3Thermostat extends utils.Adapter {
     }
 
     fSetTemp(sDevMAC, sTemp) {
-        this.log.info("********MAC: " + sDevMAC + " Temp: "+sTemp);
+        this.log.info("Set " + sTemp + "°C on Device  "+sDevMAC);
         const sPath = this.config.inp_eq3Controller_path;
         const sCommand = "python " + sPath + " setValue " + sDevMAC + " " + sTemp;  
         try {
