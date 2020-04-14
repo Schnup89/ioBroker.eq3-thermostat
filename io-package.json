@@ -71,6 +71,9 @@
         ]
     },
     "native": {
+        "getEQ3Devices": [],
+        "inp_eq3Controller_path": "python3 /home/pi/eq3Controller.py",
+        "inp_refresh_interval": 5
     },
     "objects": [],
     "instanceObjects": []

@@ -33,6 +33,7 @@ class Eq3Thermostat extends utils.Adapter {
      */
     async onReady() {
         // Initialize your adapter here
+        let bPreCheckErr = false;   //We can't stop the adapter since we need it 4 path check. Make preCheck, if error found don't run main functions 
         const version = process.version;
         const va = version.split(".");
         if (va[0] === "v0" && va[1] === "10") {
@@ -43,14 +44,23 @@ class Eq3Thermostat extends utils.Adapter {
             exec     = require("child_process").execSync;
         }
         
-        this.log.info("##### LOADED CONFIG ##### ");
-        this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
-        this.log.info("Update-Interval: " + this.config.inp_refresh_interval);
-        this.log.info("PY-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
+        this.log.info("##### LOAD CONFIG ##### ");
+        if (!this.config.getEQ3Devices.length) {
+            this.log.info("## No Devices created, only Path-Check available");
+            bPreCheckErr = true;
+        }
         if (!Number.isInteger(parseInt(this.config.inp_refresh_interval))) {
             this.config.inp_refresh_interval = 5;
             this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
+            //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         }
+        if (this.config.inp_eq3Controller_path.length == 0) {
+            this.log.info("## Python-Path emtpy, only Path-Check available");
+            bPreCheckErr = true;
+        }
+        this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
+        this.log.info("Update-Interval: " + this.config.inp_refresh_interval);
+        this.log.info("PY-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
 
         this.log.info("##### CREATE OBJECTS ##### ");
         if (this.config.getEQ3Devices.length) {
@@ -66,10 +76,12 @@ class Eq3Thermostat extends utils.Adapter {
 
 
         this.log.info("##### RUN ADAPTER ##### ");
-
-        if (this.config.getEQ3Devices.length) {
+        if (!bPreCheckErr) {
             this.fEQ3Update();
+        }else{
+            this.log.info("##### PRE CHECK ERRORS, MAIN FUNCTIONS DISABLED! Check Settings");
         }
+   
         
      
         // in this template all states changes inside the adapters namespace are subscribed
