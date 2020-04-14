@@ -22,14 +22,15 @@ systemDictionary = {
         "en": "To be defined...",
         "de": "<b>Der Adapter dient zur einfachen Steuerung eurer eq3-Thermostate per Bluetooth.</b><br><br>"+
         "Die Thermostate werden nach dem einbinden in den manuellen Modus versetzt, dies bedeutet dass die eingebaute Zeitsteuerung / Automatik im Thermostat nicht mehr genutzt werden kann. Um eine Zeitsteuerung zu erreichen muss diese in IOBroker abgebildet werden.<br>"+
-        "Eine Änderung der Temperatur am Thermostat aktualisert auch den Datenpunkt in IOBroker, hierfür wird gemäß des Aktualisierungsintervals die aktuellen Informationen abgerufen.<br>"+
-        "<i>! Ein zu niedriger Aktualisierungsinterval wirkt sich negativ auf die Batterielaufzeit des Thermostats aus !</i><br>"+
-        "Ein Danke geht an <a href=\"https://github.com/rytilahti\">rytilahti</a> für seine Python-library <a href=\"https://github.com/rytilahti/python-eq3bt\">python-eq3bt</a> welche hier genutzt wird.<br><br>"+
+        "Eine Änderung der Temperatur am Thermostat aktualisert auch den Datenpunkt in IOBroker, hierfür wird gemäß des Aktualisierungsintervalls die aktuellen Informationen abgerufen.<br>"+
+        "Ein zu niedriger Aktualisierungsintervall wirkt sich negativ auf die Batterielaufzeit des Thermostats aus !<br>"+
+        "Ein Danke geht an <a href=\"https://github.com/rytilahti\" target=\"_blank\">rytilahti</a> für seine Python-library <a href=\"https://github.com/rytilahti/python-eq3bt\" target=\"_blank\">python-eq3bt</a> welche hier genutzt wird.<br><br>"+
         "Voraussetzungen:<br>"+
         "- Getestestet wurde auf einem RPI 3B+, andere Systeme sollten mit Bluetooth auch funktionieren<br>"+
-        "- Python<b><i>3</i></b><br>"+
+        "- Python<br>"+
         "- Python-eq3bt library, installieren mit: <i>pip3 install python-eq3bt</i><br>"+
-        "- Das eq3Controller.py-Script<br><br>",
+        "- Das eq3Controller.py-Script<br><br>"+
+        "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)"
     },
     "lab_eq3Controller_path": {
         "en": "Path to <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  e.g. python3 /home/pi/eq3Controller.py",
@@ -41,7 +42,7 @@ systemDictionary = {
     },
     "lab_refresh_interval": {
         "en": "Refresh interval (minutes)",
-        "de": "Aktualisierungsinterval (Minuten)",
+        "de": "Aktualisierungsintervalö (Minuten)",
     },
     "lab_devices": {
         "en": "Devicelist",
