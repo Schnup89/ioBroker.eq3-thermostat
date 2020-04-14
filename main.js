@@ -47,17 +47,20 @@ class Eq3Thermostat extends utils.Adapter {
         this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
         this.log.info("Update-Interval: " + this.config.inp_refresh_interval);
         this.log.info("PY-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
-
+        if (!Number.isInteger(this.config.inp_refresh_interval)) {
+            this.config.inp_refresh_interval = 5;
+            this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
+        }
 
         this.log.info("##### CREATE OBJECTS ##### ");
         if (this.config.getEQ3Devices.length) {
             for (let nDev = 0; nDev < this.config.getEQ3Devices.length; nDev++) {
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
                 await this.createDevice(sDevMAC);
-                await this.createState(sDevMAC,"","temperature",{ role: "level", write: true,});
-                await this.createState(sDevMAC,"","valve","level");
-                await this.createState(sDevMAC,"","low_battery_alarm","indicator");
-                await this.createState(sDevMAC,"","name","text");
+                await this.createState(sDevMAC,"","temperature",{ role: "level", write: true, type: "number", unit: "°C", min: 5, max: 30 });
+                await this.createState(sDevMAC,"","valve",{ role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 });
+                await this.createState(sDevMAC,"","low_battery_alarm",{ role: "indicator", write: false, type: "boolean" });
+                await this.createState(sDevMAC,"","name",{ role: "text", write: false, type: "string" });
             }
         }
 
