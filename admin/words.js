@@ -28,12 +28,12 @@ systemDictionary = {
         "Voraussetzungen:<br>"+
         "- Getestestet wurde auf einem RPI 3B+, andere Systeme sollten mit Bluetooth auch funktionieren<br>"+
         "- Python<b><i>3</i></b><br>"+
-        "- Python3-eq3bt library von  , installieren mit: <i>pip3 install python-eq3bt</i><br>"+
+        "- Python-eq3bt library, installieren mit: <i>pip3 install python-eq3bt</i><br>"+
         "- Das eq3Controller.py-Script<br><br>",
     },
     "lab_eq3Controller_path": {
         "en": "Path to eq3Controller.py   |  e.g. python3 /home/pi/eq3Controller.py",
-        "de": "Pfad zu eq3Controller.py   |  z.B. python /home/pi/eq3Controller.py"
+        "de": "Pfad zu eq3Controller.py   |  z.B. python3 /home/pi/eq3Controller.py"
     },
     "btn_checkPath": {
         "en": "Check Path",
