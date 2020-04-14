@@ -38,6 +38,7 @@ Minimal einstellbare Temperatur 5°C (aus), Maximal einstellbare Temperatur 30°C
 
 Für diesen Adapter wird eine Python-Library genutzt welche installiert und getestet sein sollte.
 
+
 ### Schritt-für-Schritt Anleitung:
 
 1. Verbinde dich per SSH oder Lokal auf die Konsole (bash) deines IOBroker Systems
@@ -63,11 +64,12 @@ oder mit Python3
 ```bash
 python3 eq3Controller.py
 ```
-Iit dies erfolgreich, so notiere dir den Pfad zu dieser Datei. Der aktuelle Pfad mit dem Kommando "pwd" in der Konsole ausgegeben.
+Ist dies erfolgreich, so notiere dir den Pfad zu dieser Datei. Der aktuelle Pfad mit dem Kommando "pwd" in der Konsole ausgegeben.
+
 
 ## Bluetooth MAC-Adresse auslesen
 
-Um später die EQ3-Thermostate ansprechen zu können beötigen der Adapter die MAC-Adresse und den Raum um die Thermostate zuordnen zu können.
+Um später die EQ3-Thermostate ansprechen zu können beötigt der Adapter die MAC-Adresse und den Raum um die Thermostate zuordnen zu können.
 
 Der Bluetooth-Name ist bei jeden Gerät geleich, sodass hier am besten ein Gerät nach dem anderen eingelesen werden sollte.
 
@@ -80,6 +82,8 @@ sudo hcitool lescan
 
 3. eq3-Thermostate erscheinen mit dem Namen "CC-RT-BLE", bitte die MAC-Adresse und den gewünschten Raum notieren.
 
+Für jedes Gerät Schritt 1. bis 3. wiederholen.
+
 
 ## Adapterkonfiguration + Erster Start
 
@@ -91,9 +95,16 @@ Trage in der Liste unten mit dem "+" die MAC-Adresse und den Raum jedes Gerätes 
 
 Sobald die Adapterkonfiguration gespeichert wird, sollten nach einer kurzen Wartezeit die Devices unter den Objekten angelegt werden.
 
- 
+```bash
+eq3-thermostat.0.MAC-Adresse
+``` 
 
- 
+
+
+
+
+
+
 
 
 
