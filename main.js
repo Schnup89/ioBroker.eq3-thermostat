@@ -190,7 +190,7 @@ class Eq3Thermostat extends utils.Adapter {
 
     fCheckLiveEQ3Controller(sPath) {
         try {
-            const sCommand = "python " + sPath + " check";
+            const sCommand = sPath + " check";
             const sCmdRes = exec(sCommand).toString().trim();
             this.log.info("Result from Command \"" + sCommand + "\": " + sCmdRes);
             if (sCmdRes === "eq3OK") {
@@ -216,7 +216,7 @@ class Eq3Thermostat extends utils.Adapter {
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
                 const sDevName = this.config.getEQ3Devices[nDev].eq3Name; 
                 const sPath = this.config.inp_eq3Controller_path;
-                const sCommand = "python " + sPath + " getValue " + sDevMAC;  
+                const sCommand = sPath + " getValue " + sDevMAC;  
                 try {
                     //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm 
                     const aCmdRes = exec(sCommand).toString().trim().split(";");
@@ -244,7 +244,7 @@ class Eq3Thermostat extends utils.Adapter {
     fSetTemp(sDevMAC, sTemp) {
         this.log.info("Set " + sTemp + "°C on Device  "+sDevMAC);
         const sPath = this.config.inp_eq3Controller_path;
-        const sCommand = "python " + sPath + " setValue " + sDevMAC + " " + sTemp;  
+        const sCommand = sPath + " setValue " + sDevMAC + " " + sTemp;  
         try {
             const sCmdRes = exec(sCommand).toString();
             this.log.info("Command result: " + sCmdRes);

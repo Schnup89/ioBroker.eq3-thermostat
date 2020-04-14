@@ -23,15 +23,17 @@ systemDictionary = {
         "de": "<b>Der Adapter dient zur einfachen Steuerung eurer eq3-Thermostate per Bluetooth.</b><br><br>"+
         "Die Thermostate werden nach dem einbinden in den manuellen Modus versetzt, dies bedeutet dass die eingebaute Zeitsteuerung / Automatik im Thermostat nicht mehr genutzt werden kann. Um eine Zeitsteuerung zu erreichen muss diese in IOBroker abgebildet werden.<br>"+
         "Eine Änderung der Temperatur am Thermostat aktualisert auch den Datenpunkt in IOBroker, hierfür wird gemäß des Aktualisierungsintervals die aktuellen Informationen abgerufen.<br>"+
-        "<i>! Ein zu niedriger Aktualisierungsinterval wirkt sich negativ auf die Batterielaufzeit des Thermostats aus !</i><br><br>"+
+        "<i>! Ein zu niedriger Aktualisierungsinterval wirkt sich negativ auf die Batterielaufzeit des Thermostats aus !</i><br>"+
+        "Ein Danke geht an <a href=\"https://github.com/rytilahti\">rytilahti</a> für seine Python-library <a href=\"https://github.com/rytilahti/python-eq3bt\">python-eq3bt</a> welche hier genutzt wird.<br><br>"+
         "Voraussetzungen:<br>"+
         "- Getestestet wurde auf einem RPI 3B+, andere Systeme sollten mit Bluetooth auch funktionieren<br>"+
-        "- Python<br>"+
+        "- Python<b><i>3</i></b><br>"+
+        "- Python3-eq3bt library von  , installieren mit: <i>pip3 install python-eq3bt</i><br>"+
         "- Das eq3Controller.py-Script<br><br>",
     },
     "lab_eq3Controller_path": {
-        "en": "Path to eq3Controller.py   |  e.g. /home/pi/eq3Controller.py",
-        "de": "Pfad zu eq3Controller.py   |  z.B. /home/pi/eq3Controller.py"
+        "en": "Path to eq3Controller.py   |  e.g. python3 /home/pi/eq3Controller.py",
+        "de": "Pfad zu eq3Controller.py   |  z.B. python /home/pi/eq3Controller.py"
     },
     "btn_checkPath": {
         "en": "Check Path",
