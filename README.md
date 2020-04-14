@@ -10,9 +10,57 @@
 
 [![NPM](https://nodei.co/npm/iobroker.eq3-thermostat.png?downloads=true)](https://nodei.co/npm/iobroker.eq3-thermostat/)
 
-## eq3-thermostat adapter for ioBroker
+## eq3-Bluetooth-Thermostat Adapter für ioBroker
 
 Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
+
+## Allgemeines
+
+### Features
+- Soll Temperatur eines Thermostats kann über "state" gesetzte werden
+- Gesetzte Temperatur wird erst per Bluetooth an Thermostat übermittelt, nachdem der Wert 8 Sekunden nicht verändert wurde
+- Wird am Thermostat selbst die Temperatur verändert wird dies über eine zyklische Ausleseroutine ausgelesen und die states gesetzt
+- Einstellbarer Aktualisierungsintervall
+
+
+! WICHTIG !
+Die Thermostate werden in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann.
+
+
+Am Thermostat kann weiterhin die gewünschtt Temperatur Manuell eingestellt werden, bei der Aktualisierung wird der Wert in IOBroker übernommen.
+Minimal einstellbare Temperatur 5°C (aus), Maximal einstellbare Temperatur 30°C 
+
+
+### Vorbereitung und Überprüfung der Umgebung
+
+Für diesen Adapter wird eine Python-Library genutzt welche installiert und getstet sein sollte.
+
+Schritt-für-Schritt Anleitung:
+
+1. Installieren der Python-Library "python-eq3bt"
+```bash
+pip install python-eq3bt
+```
+oder mit Python3
+```bash
+pip3 install python-eq3bt
+```
+
+2. Testen der Python-Library
+Kopiere die Datei "eq3Controller.py" aus dem Repository-Ordner "python-script" oder erstelle Sie mit einem Text-Editor deiner Wahl.
+Sollte die Library richtig installiert und eingebunden sein, sollte folgendes Kommando die Befehle ausgeben:
+```bash
+python eq3Controller.py
+```
+oder mit Python3
+```bash
+python3 eq3Controller.py
+```
+
+
+
+
+
 
 ## Developer manual
 This section is intended for the developer. It can be deleted later
