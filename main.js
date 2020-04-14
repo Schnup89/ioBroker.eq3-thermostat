@@ -159,13 +159,16 @@ class Eq3Thermostat extends utils.Adapter {
             if (sCmdRes === "eq3OK") {
                 this.log.info("check successful!");
                 return true;
+            }else{
+                this.log.info("check Failed! Responese doesn't match eq3OK");
+                this.log.info("check Failed! Responese: " + sCmdRes);
+                return false;
             }
         }catch (e) {
             this.log.info("check Failed! Responese doesn't match eq3OK");
+            this.log.info("check Failed! Responese: " + e);
             return false;
         }
-        this.log.info("check Failed! Responese doesn't match eq3OK");
-        return false;
     }
     //sudo timeout 10s sudo hcitool lescan | grep CC-RT-BLE
 

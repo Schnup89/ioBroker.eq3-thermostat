@@ -32,8 +32,8 @@ systemDictionary = {
         "- Das eq3Controller.py-Script<br><br>",
     },
     "lab_eq3Controller_path": {
-        "en": "Path to eq3Controller.py   |  e.g. python3 /home/pi/eq3Controller.py",
-        "de": "Pfad zu eq3Controller.py   |  z.B. python3 /home/pi/eq3Controller.py"
+        "en": "Path to <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  e.g. python3 /home/pi/eq3Controller.py",
+        "de": "Pfad zu <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  z.B. python3 /home/pi/eq3Controller.py"
     },
     "btn_checkPath": {
         "en": "Check Path",
