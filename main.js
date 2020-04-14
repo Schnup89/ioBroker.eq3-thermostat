@@ -47,7 +47,7 @@ class Eq3Thermostat extends utils.Adapter {
         this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
         this.log.info("Update-Interval: " + this.config.inp_refresh_interval);
         this.log.info("PY-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
-        if (!Number.isInteger(this.config.inp_refresh_interval)) {
+        if (!Number.isInteger(parseInt(this.config.inp_refresh_interval))) {
             this.config.inp_refresh_interval = 5;
             this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
         }
