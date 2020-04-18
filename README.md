@@ -1,4 +1,5 @@
 ![Logo](admin/eq3-thermostat.png)
+
 # ioBroker.eq3-thermostat
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.eq3-thermostat.svg)](https://www.npmjs.com/package/iobroker.eq3-thermostat)
@@ -10,14 +11,17 @@
 
 [![NPM](https://nodei.co/npm/iobroker.eq3-thermostat.png?downloads=true)](https://nodei.co/npm/iobroker.eq3-thermostat/)
 
-## eq3-Bluetooth-Thermostat Adapter für ioBroker
+**Tests:**: [![Travis-CI](http://img.shields.io/travis/Schnup89/ioBroker.eq3-thermostat/master.svg)](https://travis-ci.org/Schnup89/ioBroker.eq3-thermostat)
+
+
+## eq3-Bluetooth-Thermostat Adapter fÃ¼r ioBroker
 
 Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
 
 ## Features
-- Soll Temperatur eines Thermostats kann über "states" gesetzte werden
-- Gesetzte Temperatur wird erst per Bluetooth an Thermostat übermittelt, nachdem der Wert 8 Sekunden nicht verändert wurde
-- Wird am Thermostat selbst die Temperatur verändert wird dies über eine zyklische Ausleseroutine ausgelesen und die states gesetzt
+- Soll Temperatur eines Thermostats kann Ã¼ber "states" gesetzte werden
+- Gesetzte Temperatur wird erst per Bluetooth an Thermostat Ã¼bermittelt, nachdem der Wert 8 Sekunden nicht verÃ¤ndert wurde
+- Wird am Thermostat selbst die Temperatur verÃ¤ndert wird dies Ã¼ber eine zyklische Ausleseroutine ausgelesen und die states gesetzt
 - Einstellbarer Aktualisierungsintervall
 - Folgende Eigenschaften werden ausgelesen
   - Soll Temperatur (temperature)
@@ -30,16 +34,16 @@ Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
 Die Thermostate werden in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann.
 
 
-Am Thermostat kann weiterhin die gewünschtt Temperatur Manuell eingestellt werden, bei der Aktualisierung wird der Wert in den IOBroker "states" übernommen.
-Minimal einstellbare Temperatur 5°C (aus), Maximal einstellbare Temperatur 30°C 
+Am Thermostat kann weiterhin die gewÃ¼nschtt Temperatur Manuell eingestellt werden, bei der Aktualisierung wird der Wert in den IOBroker "states" Ã¼bernommen.
+Minimal einstellbare Temperatur 5Â°C (aus), Maximal einstellbare Temperatur 30Â°C 
 
 
-## Vorbereitung und Überprüfung der Umgebung
+## Vorbereitung und ÃœberprÃ¼fung der Umgebung
 
-Für diesen Adapter wird eine Python-Library genutzt welche installiert und getestet sein sollte.
+FÃ¼r diesen Adapter wird eine Python-Library genutzt welche installiert und getestet sein sollte.
 
 
-### Schritt-für-Schritt Anleitung:
+### Schritt-fÃ¼r-Schritt Anleitung:
 
 1. Verbinde dich per SSH oder Lokal auf die Konsole (bash) deines IOBroker Systems
 
@@ -47,7 +51,7 @@ Für diesen Adapter wird eine Python-Library genutzt welche installiert und getes
 ```bash
 pip install python-eq3bt
 ```
-oder für Python3
+oder fÃ¼r Python3
 ```bash
 pip3 install python-eq3bt
 ```
@@ -69,29 +73,29 @@ Ist dies erfolgreich, so notiere dir den Pfad zu dieser Datei. Der aktuelle Pfad
 
 ## Bluetooth MAC-Adresse auslesen
 
-Um später die EQ3-Thermostate ansprechen zu können beötigt der Adapter die MAC-Adresse und den Raum um die Thermostate zuordnen zu können.
+Um spÃ¤ter die EQ3-Thermostate ansprechen zu kÃ¶nnen beÃ¶tigt der Adapter die MAC-Adresse und den Raum um die Thermostate zuordnen zu kÃ¶nnen.
 
-Der Bluetooth-Name ist bei jeden Gerät geleich, sodass hier am besten ein Gerät nach dem anderen eingelesen werden sollte.
+Der Bluetooth-Name ist bei jeden GerÃ¤t geleich, sodass hier am besten ein GerÃ¤t nach dem anderen eingelesen werden sollte.
 
-1. Batterie in eq3-Thermostat einsetzen (evtl. muss der Thermostat auch an ein Ventil angeschlossen sein <- Bitte kurze Rückmeldung per Issue)
+1. Batterie in eq3-Thermostat einsetzen (evtl. muss der Thermostat auch an ein Ventil angeschlossen sein <- Bitte kurze RÃ¼ckmeldung per Issue)
 
 2. BTLE Scan starten und warten (Bis zu 20 Sekunden)
 ```bash
 sudo hcitool lescan
 ```
 
-3. eq3-Thermostate erscheinen mit dem Namen "CC-RT-BLE", bitte die MAC-Adresse und den gewünschten Raum notieren.
+3. eq3-Thermostate erscheinen mit dem Namen "CC-RT-BLE", bitte die MAC-Adresse und den gewÃ¼nschten Raum notieren.
 
-Für jedes Gerät Schritt 1. bis 3. wiederholen.
+FÃ¼r jedes GerÃ¤t Schritt 1. bis 3. wiederholen.
 
 
 ## Adapterkonfiguration + Erster Start
 
 Im Adapter kann nun der Pfad wie oben bei der Vorberitung notiert eingetragen werden.
 
-Den Aktualisierungsintervall würde ich auf 2-5 Minuten einstellen. je länger der Intervall desto länger halten die Batterien des eq3-Thermostats.
+Den Aktualisierungsintervall wÃ¼rde ich auf 2-5 Minuten einstellen. je lÃ¤nger der Intervall desto lÃ¤nger halten die Batterien des eq3-Thermostats.
 
-Trage in der Liste unten mit dem "+" die MAC-Adresse und den Raum jedes Gerätes ein.
+Trage in der Liste unten mit dem "+" die MAC-Adresse und den Raum jedes GerÃ¤tes ein.
 
 Sobald die Adapterkonfiguration gespeichert wird, sollten nach einer kurzen Wartezeit die Devices unter den Objekten angelegt werden.
 
