@@ -1,4 +1,4 @@
-/*global systemDictionary:true */
+/*global sysntemDictionary:true */
 "use strict";
 
 systemDictionary = {
