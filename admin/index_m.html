@@ -28,6 +28,7 @@
                         document.getElementById("fTestPath").style="background-color: green;";
                     } else {
                         document.getElementById("fTestPath").style="background-color: red;";
+                        showMessage("Check ioBroker Log");
                     }
                 });
             }));
@@ -101,18 +102,20 @@
             <div class="col s12">
                 <p class="translate title">lab_general</p>
                 <p class="translate info">text_general</p>
-                <div class="col s6">
-                    <input class="value" id="inp_eq3Controller_path" />
-                    <label for="inp_eq3Controller_path" class="translate">lab_eq3Controller_path</label>
+                <div class="input-field col s6">
+                    <input class="value" id="inp_eq3Controller_path" type="text"/>
+                    <label for="inp_eq3Controller_path" class="translate">lab_eq3Controller_path_short</label>
+                    <i><span class="translate">lab_eq3Controller_path_long</span></i>
                 </div>
                 <div class="col s6">
                     <a id="fTestPath" class="btn"><span class="translate">btn_checkPath</span></a>
                 </div>
             </div>
             <div class="col s12">
-                <div class="col s6">
+                <div class="input-field col s6">
                     <input class="value" id="inp_refresh_interval" type="number" />
-                    <label for="inp_refresh_interval" class="translate">lab_refresh_interval</label>
+                    <label for="inp_refresh_interval" class="translate">lab_refresh_interval_short</label>
+                    <i><span class="translate">lab_refresh_interval_long</span></i>
                 </div>
             </div>
         </div>

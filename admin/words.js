@@ -32,17 +32,25 @@ systemDictionary = {
         "- Das eq3Controller.py-Script<br><br>"+
         "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)"
     },
-    "lab_eq3Controller_path": {
-        "en": "Path to <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  e.g. python3 /home/pi/eq3Controller.py",
-        "de": "Pfad zu <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  z.B. python3 /home/pi/eq3Controller.py"
+    "lab_eq3Controller_path_short": {
+        "en": "Path to eq3Controller.py",
+        "de": "Pfad zu eq3Controller.py"
+    },
+    "lab_eq3Controller_path_long": {
+        "en": "<a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  e.g. python3 /home/pi/eq3Controller.py",
+        "de": "<a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  z.B. python3 /home/pi/eq3Controller.py"
     },
     "btn_checkPath": {
         "en": "Check Path",
         "de": "Pfad testen",
     },
-    "lab_refresh_interval": {
-        "en": "Refresh interval (minutes)",
-        "de": "Aktualisierungsintervalö (Minuten)",
+    "lab_refresh_interval_short": {
+        "en": "Refresh interval",
+        "de": "Aktualisierungsintervall",
+    },
+    "lab_refresh_interval_long": {
+        "en": "in minutes",
+        "de": "In Minuten",
     },
     "lab_devices": {
         "en": "Devicelist",

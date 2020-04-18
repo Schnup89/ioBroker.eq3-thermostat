@@ -38,6 +38,7 @@ class Eq3Thermostat extends utils.Adapter {
         const va = version.split(".");
         if (va[0] === "v0" && va[1] === "10") {
             this.log.info("NODE Version = " + version + ", we need new exec-sync");
+            // @ts-ignore
             exec     = require("sync-exec");
         } else {
             this.log.info("NODE Version = " + version + ", we need new execSync");
@@ -49,7 +50,7 @@ class Eq3Thermostat extends utils.Adapter {
             this.log.info("## No Devices created, only Path-Check available");
             bPreCheckErr = true;
         }
-        if (!Number.isInteger(parseInt(this.config.inp_refresh_interval))) {
+        if (!Number.isInteger(this.config.inp_refresh_interval)) {
             this.config.inp_refresh_interval = 5;
             this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
             //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
@@ -65,12 +66,14 @@ class Eq3Thermostat extends utils.Adapter {
         this.log.info("##### CREATE OBJECTS ##### ");
         if (this.config.getEQ3Devices.length) {
             for (let nDev = 0; nDev < this.config.getEQ3Devices.length; nDev++) {
+                // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
-                await this.createDevice(sDevMAC);
-                await this.createState(sDevMAC,"","temperature",{ role: "level", write: true, type: "number", unit: "°C", min: 5, max: 30 });
-                await this.createState(sDevMAC,"","valve",{ role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 });
-                await this.createState(sDevMAC,"","low_battery_alarm",{ role: "indicator", write: false, type: "boolean" });
-                await this.createState(sDevMAC,"","name",{ role: "text", write: false, type: "string" });
+                
+                await this.setObjectNotExists(sDevMAC, { type: "device", common: { name: sDevMAC }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".temperature", { type: "state", common: { name: "temperature", role: "level", write: true, type: "number", unit: "°C", min: 5, max: 30 }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".valve", { type: "state", common: { name: "valve", role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".low_battery_alarm", { type: "state", common: { name: "low_battery_alarm", role: "indicator", write: false, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".name", { type: "state", common: { name: "name", role: "text", write: false, type: "string" }, native: {} });
             }
         }
 
@@ -162,6 +165,7 @@ class Eq3Thermostat extends utils.Adapter {
             }
         }
     }
+    
 
     fCheckLiveEQ3Controller(sPath) {
         try {
@@ -191,7 +195,9 @@ class Eq3Thermostat extends utils.Adapter {
 
             //Get Information from EQ3 Devices via Python script for each device
             for (let nDev = 0; nDev < this.config.getEQ3Devices.length; nDev++) {
+                // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
+                // @ts-ignore
                 const sDevName = this.config.getEQ3Devices[nDev].eq3Name; 
                 const sPath = this.config.inp_eq3Controller_path;
                 const sCommand = sPath + " getValue " + sDevMAC;  
