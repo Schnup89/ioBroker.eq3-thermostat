@@ -31,7 +31,7 @@ Voraussetzung ist Python und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Fu
   - Batteriewarnung (low_battery_alarm)
 
 
-<b>! WICHTIG !<b>
+<b>! WICHTIG !</b>
 
 Die Thermostate werden in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann.
 
@@ -62,6 +62,12 @@ pip3 install python-eq3bt
 2. Testen der Python-Library
 
 Kopiere die Datei "eq3Controller.py" aus dem Repository-Ordner "python-script" oder erstelle Sie mit einem Text-Editor deiner Wahl.
+
+Nun das Script noch für alle System-User ausführbar machen:  
+```bash
+sudo chmod +x /home/pi/eq3Controller.py
+```
+
 Sollte die Library richtig installiert und eingebunden sein, sollte folgendes Kommando die Befehle ausgeben:
 ```bash
 python eq3Controller.py
