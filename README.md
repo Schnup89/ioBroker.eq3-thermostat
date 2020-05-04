@@ -114,6 +114,8 @@ eq3-thermostat.0.MAC-Adresse
 
 ## (Optional) Habpanel-Steuerung
 
+<img src="https://github.com/Schnup89/IOBroker_HABPanel_eq3_Thermostat/blob/master/eq3-panel.jpg?raw=true" width="30%">
+
 Ich habe für Habpanel (ioBroker-Adapter für Visualisierung) ein für mich gutes Design entwickelt um vom Smartphone aus die Thermostate einstellen zu können.  
 Dafür muss natürlich Habpanel installiert sein, und Ihr müsste folgende Einstellungen tätigen:
 
