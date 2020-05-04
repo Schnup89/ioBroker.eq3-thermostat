@@ -112,6 +112,63 @@ eq3-thermostat.0.MAC-Adresse
 ``` 
 
 
+## (Optional) Habpanel-Steuerung
+
+Ich habe für Habpanel (ioBroker-Adapter für Visualisierung) ein für mich gutes Design entwickelt um vom Smartphone aus die Thermostate einstellen zu können.  
+Dafür muss natürlich Habpanel installiert sein, und Ihr müsste folgende Einstellungen tätigen:
+
+Ruft euer HABPanel auf und erstellt zwei Objekte, ein "template" und einen "knob" wie im Bild zusehen.
+
+In das Template-Objekt folgenden Inhalt kopieren:
+
+```html
+<style>
+.progress-bar {
+    background-color: #0db9f0;
+ }
+.progress {
+    height: 10px;
+ }
+</style>
+
+<uib-progressbar style="background-color: #89a" animate="false"
+max="100" value="itemValue('eq3-thermostat.0.MAC-Adresse.valve')">
+</uib-progressbar>
+``` 
+
+<i>! "MAC-Adresse" im Pfad auf die MAC-Adresse des Thermostats anpassen !</i>
+
+Und die Einstellungen für das "Knob"-Element:
+
+```bash
+General
+
+Item: javascript.0.Thermometer.Wohnzimmer_Temp
+
+Min: 5
+
+Max: 29
+
+Step: 0,5
+
+Unit: °C
+
+x Show Value
+
+x Show Name
+
+Bar & Track
+
+Angles: Start 20, End 340
+
+x Display previous value when dragging
+
+Misc.
+
+Font Size: 24
+``` 
+
+
 
 
 ## Changelog
