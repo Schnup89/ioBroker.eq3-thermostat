@@ -147,7 +147,7 @@ Und die Einstellungen für das "Knob"-Element:
 ```bash
 General
 
-Item: javascript.0.Thermometer.Wohnzimmer_Temp
+Item: eq3-thermostat.0.MAC-Adresse.temperature
 
 Min: 5
 
