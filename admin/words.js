@@ -52,6 +52,14 @@ systemDictionary = {
         "en": "in minutes",
         "de": "In Minuten",
     },
+    "lab_button_step_short": {
+        "en": "Temperature steps for plus/minus button",
+        "de": "Temperaturschritte für Plus/Minus button",
+    },
+    "lab_button_step_long": {
+        "en": "0.5°C or 1.0°C",
+        "de": "0,5°C oder 1,0°C",
+    },
     "lab_devices": {
         "en": "Devicelist",
         "de": "Geräteliste",
