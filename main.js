@@ -55,12 +55,17 @@ class Eq3Thermostat extends utils.Adapter {
             this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
             //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         }
+        if (!parseFloat(this.config.inp_button_step_size)) {
+            this.config.inp_button_step_size = 1.0;
+            this.log.info("Button step overwritten to: " + this.config.inp_button_step_size);
+        }
         if (this.config.inp_eq3Controller_path.length == 0) {
             this.log.info("## Python-Path emtpy, only Path-Check available");
             bPreCheckErr = true;
         }
         this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
         this.log.info("Update-Interval: " + this.config.inp_refresh_interval);
+        this.log.info("Button step: " + this.config.inp_button_step_size);
         this.log.info("PY-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
 
         this.log.info("##### CREATE OBJECTS ##### ");
@@ -74,6 +79,8 @@ class Eq3Thermostat extends utils.Adapter {
                 await this.setObjectNotExists(sDevMAC+".valve", { type: "state", common: { name: "valve", role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".low_battery_alarm", { type: "state", common: { name: "low_battery_alarm", role: "indicator", write: false, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".name", { type: "state", common: { name: "name", role: "text", write: false, type: "string" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".plus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".minus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
             }
         }
 
@@ -81,7 +88,7 @@ class Eq3Thermostat extends utils.Adapter {
         this.log.info("##### RUN ADAPTER ##### ");
         if (!bPreCheckErr) {
             this.fEQ3Update();
-        }else{
+        } else {
             this.log.info("##### PRE CHECK ERRORS, MAIN FUNCTIONS DISABLED! Check Settings");
         }
    
@@ -134,14 +141,20 @@ class Eq3Thermostat extends utils.Adapter {
             if (!(state.from == "system.adapter.eq3-thermostat.0")) {
                 //And only on Temperature Change since this is the Only one implemented yet
                 const aState = id.split(".");
-                if (aState[aState.length-1].toString() == "temperature") {   //aState.len -1 = statename
+                const stateName = aState[aState.length - 1].toString() //aState.len -1 = statename
+                const updateStep = parseFloat(this.config.inp_refresh_interval);
+                if (stateName === "temperature") {
                     this.log.info(id + " changed from " + state.from);
                     //Only send BT Temperature after Temperature does not have Changed for 8 Seconds
-                    const sTmrName = "tmr_" + aState[aState.length-2];  //aState.len -2 = MAC
+                    const sTmrName = "tmr_" + aState[aState.length - 2];  //aState.len -2 = MAC
                     if(global[sTmrName]) {  //if Timer active
                         clearTimeout(global[sTmrName]);    //Reset it
                     }
-                    global[sTmrName] = setTimeout(this.fSetTemp.bind(this, aState[aState.length-2], state.val), 8000);   // this, MAC, Temperatur
+                    global[sTmrName] = setTimeout(this.fSetTemp.bind(this, aState[aState.length - 2], state.val), 8000);  // this, MAC, Temperatur
+                } else if (stateName === "plus") {
+                    state.val = state.val + updateStep;
+                } else if (stateName === "minus") {
+                    state.val = state.val - updateStep;
                 }
             }
         } else {
