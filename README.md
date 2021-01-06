@@ -58,6 +58,10 @@ oder für Python3
 pip3 install python-eq3bt
 ```
 ! Evtl. ein "sudo" voranstellen
+! Sollte der Konsolentest erfolgrich sein, und in ioBroker ein Fehler mit "import module eq3bt" kommt, bitte folgendes Kommando ausführen:
+```bash
+sudo -H -u iobroker pip3 install python-eq3bt
+```
 
 2. Testen der Python-Library
 
