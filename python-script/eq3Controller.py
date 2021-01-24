@@ -3,25 +3,43 @@ import subprocess
 import sys
 import time
 
-if len(sys.argv) > 1:
-    # CMD Parameter
-    if sys.argv[1] == "check":      #Check
-        print("eq3OK")
 
-    if sys.argv[1] == "getValue":   #Get Informatioms from BTDevice
-        thermostat = Thermostat(sys.argv[2])
-        thermostat.update()
-        if str(thermostat.mode) == "Mode.Closed":
-            thermostat.mode = 3   #Set Mode Manual
+def doBT(mode):
+    global rcounter
+
+    try:
+        # CMD Parameter
+        if mode[1] == "check":      #Check
+            print("eq3OK")
+
+        if mode[1] == "getValue":   #Get Informatioms from BTDevice
+            thermostat = Thermostat(mode[2])
             thermostat.update()
-        print(str(thermostat.target_temperature) + ";" + str(thermostat.valve_state)  + ";" + str(thermostat.low_battery))
-        time.sleep(1)
+            if str(thermostat.mode) == "Mode.Closed":
+                thermostat.mode = 3   #Set Mode Manual
+                thermostat.update()
+            print(str(thermostat.target_temperature) + ";" + str(thermostat.valve_state)  + ";" + str(thermostat.low_battery))
+            time.sleep(1)
 
-    if sys.argv[1] == "setValue":   #Set Temperature to BTDevice
-        thermostat = Thermostat(sys.argv[2])
-        thermostat.target_temperature = float(sys.argv[3])
-        thermostat.update()
-        print ("OK")
+        if mode[1] == "setValue":   #Set Temperature to BTDevice
+            thermostat = Thermostat(mode[2])
+            thermostat.target_temperature = float(sys.argv[3])
+            thermostat.update()
+            print ("OK")
+
+    except:
+        rcounter += 1
+        if rcounter < 10:
+            doBT(mode)
+        else:
+            raise
+
+
+# retry counter
+rcounter = 0
+
+if len(sys.argv) > 1:
+    doBT(sys.argv)
 
 else:
     print("Possible Arguments:");
