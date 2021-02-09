@@ -2,6 +2,14 @@ from eq3bt import Thermostat
 import subprocess
 import sys
 import time
+import os, signal
+
+
+def check_kill_process(pstring):
+    for line in os.popen("ps ax | grep " + pstring + " | grep -v grep"):
+        fields = line.split()
+        pid = fields[0]
+        os.kill(int(pid), signal.SIGKILL)
 
 
 def doBT(mode):
@@ -29,9 +37,11 @@ def doBT(mode):
 
     except:
         rcounter += 1
-        if rcounter < 10:
+        if rcounter < 5:
+            time.sleep(2)
             doBT(mode)
         else:
+            check_kill_process("eq3Controller.py")
             raise
 
 
