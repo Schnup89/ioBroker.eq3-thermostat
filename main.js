@@ -33,18 +33,18 @@ class Eq3Thermostat extends utils.Adapter {
      */
     async onReady() {
         // Initialize your adapter here
-        let bPreCheckErr = false;   //We can't stop the adapter since we need it 4 path check. Make preCheck, if error found don't run main functions 
+        let bPreCheckErr = false;   //We can't stop the adapter since we need it 4 path check. Make preCheck, if error found don't run main functions
         const version = process.version;
         const va = version.split(".");
         if (va[0] === "v0" && va[1] === "10") {
             this.log.info("NODE Version = " + version + ", we need new exec-sync");
             // @ts-ignore
-            exec     = require("sync-exec");
+            exec = require("sync-exec");
         } else {
             this.log.info("NODE Version = " + version + ", we need new execSync");
-            exec     = require("child_process").execSync;
+            exec = require("child_process").execSync;
         }
-        
+
         this.log.info("##### LOAD CONFIG ##### ");
         if (!this.config.getEQ3Devices.length) {
             this.log.info("## No Devices created, only Path-Check available");
@@ -73,7 +73,7 @@ class Eq3Thermostat extends utils.Adapter {
             for (let nDev = 0; nDev < this.config.getEQ3Devices.length; nDev++) {
                 // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
-                
+
                 await this.setObjectNotExists(sDevMAC, { type: "device", common: { name: sDevMAC }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".temperature", { type: "state", common: { name: "temperature", role: "level.temperature", write: true, type: "number", unit: "°C", min: 5, max: 30 }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".valve", { type: "state", common: { name: "valve", role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 }, native: {} });
@@ -91,9 +91,9 @@ class Eq3Thermostat extends utils.Adapter {
         } else {
             this.log.info("##### PRE CHECK ERRORS, MAIN FUNCTIONS DISABLED! Check Settings");
         }
-   
-        
-     
+
+
+
         // in this template all states changes inside the adapters namespace are subscribed
         this.subscribeStates("*");
     }
@@ -157,11 +157,9 @@ class Eq3Thermostat extends utils.Adapter {
                     state.val = state.val - updateStep;
                 }
             }
-        } else {
-            // The state was deleted
-        }
+        } else { /* The state was deleted */ }
     }
-    
+
     // /**
     //  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
     //  * Using this method requires "common.message" property to be set to true in io-package.json
@@ -178,7 +176,6 @@ class Eq3Thermostat extends utils.Adapter {
             }
         }
     }
-    
 
     fCheckLiveEQ3Controller(sPath) {
         try {
@@ -188,12 +185,12 @@ class Eq3Thermostat extends utils.Adapter {
             if (sCmdRes === "eq3OK") {
                 this.log.info("check successful!");
                 return true;
-            }else{
+            } else {
                 this.log.info("check Failed! Responese doesn't match eq3OK");
                 this.log.info("check Failed! Responese: " + sCmdRes);
                 return false;
             }
-        }catch (e) {
+        } catch (e) {
             this.log.info("check Failed! Responese doesn't match eq3OK");
             this.log.info("check Failed! Responese: " + e);
             return false;
@@ -211,19 +208,19 @@ class Eq3Thermostat extends utils.Adapter {
                 // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
                 // @ts-ignore
-                const sDevName = this.config.getEQ3Devices[nDev].eq3Name; 
+                const sDevName = this.config.getEQ3Devices[nDev].eq3Name;
                 const sPath = this.config.inp_eq3Controller_path;
-                const sCommand = sPath + " getValue " + sDevMAC;  
+                const sCommand = sPath + " getValue " + sDevMAC;
                 try {
-                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm 
+                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm
                     const aCmdRes = exec(sCommand).toString().trim().split(";");
                     this.fUpdateDevObj(aCmdRes, sDevMAC, sDevName);
-                }catch (e) {
+                } catch (e) {
                     this.log.error("Command \"" + sCommand + "\" failed!");
                     this.log.error("-----------\"" + e);
-                }      
+                }
             }
-        }else{
+        } else {
             //No Devices No Timer
             clearInterval(tmr_EQ3Update);
             tmr_EQ3Update = null;
@@ -231,24 +228,26 @@ class Eq3Thermostat extends utils.Adapter {
     }
 
     fUpdateDevObj(aDevValues, sDevMAC, sDevName) {
-        //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm 
-        this.setStateAsync(sDevMAC+".temperature", { val: aDevValues[0], ack: true });
-        this.setStateAsync(sDevMAC+".valve", { val: aDevValues[1], ack: true });
-        this.setStateAsync(sDevMAC+".low_battery_alarm", { val: aDevValues[2], ack: true });
+        let temperature = parseInt(aDevValues[0])
+        let valve = parseInt(aDevValues[1])
+        let low_battery_alarm = (aDevValues[2].toLowerCase() === 'true')
+        this.setStateAsync(sDevMAC+".temperature", { val: temperature, ack: true });
+        this.setStateAsync(sDevMAC+".valve", { val: valve, ack: true });
+        this.setStateAsync(sDevMAC+".low_battery_alarm", { val: low_battery_alarm, ack: true });
         this.setStateAsync(sDevMAC+".name", { val: sDevName, ack: true });
     }
 
     fSetTemp(sDevMAC, sTemp) {
         this.log.info("Set " + sTemp + "°C on Device  "+sDevMAC);
         const sPath = this.config.inp_eq3Controller_path;
-        const sCommand = sPath + " setValue " + sDevMAC + " " + sTemp;  
+        const sCommand = sPath + " setValue " + sDevMAC + " " + sTemp;
         try {
             const sCmdRes = exec(sCommand).toString();
             this.log.info("Command result: " + sCmdRes);
-        }catch (e) {
+        } catch (e) {
             this.log.error("Command \"" + sCommand + "\" failed!");
             this.log.error("-----------\"" + e);
-        }     
+        }
     }
 }
 
