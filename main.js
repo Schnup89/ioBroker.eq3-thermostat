@@ -7,6 +7,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
+const http = require('http');
 
 let exec;
 let tmr_EQ3Update = null;
@@ -182,6 +183,12 @@ class Eq3Thermostat extends utils.Adapter {
 
     fCheckLiveEQ3Controller(sURL) {
         try {
+            http.get(sURL + "?mac=00:00:00:00:00:00", function(res) {
+                console.log("Got response: " + res.statusCode);
+                this.log.info("Body: " + res.body);
+              }).on('error', function(e) {
+                this.log.info("Got HTTP error: " + e.message);
+              });
             const sCommand = sURL + " check";
             const sCmdRes = exec(sCommand).toString().trim();
             this.log.info("Result from Command \"" + sCommand + "\": " + sCmdRes);

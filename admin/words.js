@@ -33,12 +33,12 @@ systemDictionary = {
         "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)"
     },
     "lab_eq3Controller_url_short": {
-        "en": "URL to eq3Webserver",
-        "de": "URL zu eq3WEbserver"
+        "en": "URL to eq3.php",
+        "de": "URL zu eq3.php"
     },
     "lab_eq3Controller_url_long": {
-        "en": "e.g. http://192.168.1.100/eq3/",
-        "de": "z.B. http://192.168.1.100/eq3/"
+        "en": "e.g. http://192.168.1.100/eq/php/eq3.php",
+        "de": "z.B. http://192.168.1.100/eq/php/eq3.php"
     },
     "btn_checkURL": {
         "en": "Check URL",
