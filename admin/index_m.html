@@ -22,12 +22,12 @@
         // This will be called by the admin adapter when the settings page loads
         var getEQ3Devices = [];  //TT, Array4Table 
         function load(settings, onChange) {
-            $('#fTestPath').on('click', (function () {
-                sendTo(null, 'checkEQ3Path', { EQ3Path: document.getElementById("inp_eq3Controller_path").value }, function (response) {
+            $('#fTestURL').on('click', (function () {
+                sendTo(null, 'checkEQ3URL', { EQ3URL: document.getElementById("inp_eq3Controller_URL").value }, function (response) {
                     if (response == "true") {
-                        document.getElementById("fTestPath").style="background-color: green;";
+                        document.getElementById("fTestURL").style="background-color: green;";
                     } else {
-                        document.getElementById("fTestPath").style="background-color: red;";
+                        document.getElementById("fTestURL").style="background-color: red;";
                         showMessage("Check ioBroker Log");
                     }
                 });
@@ -103,12 +103,12 @@
                 <p class="translate title">lab_general</p>
                 <p class="translate info">text_general</p>
                 <div class="input-field col s6">
-                    <input class="value" id="inp_eq3Controller_path" type="text"/>
-                    <label for="inp_eq3Controller_path" class="translate">lab_eq3Controller_path_short</label>
-                    <i><span class="translate">lab_eq3Controller_path_long</span></i>
+                    <input class="value" id="inp_eq3Controller_url" type="text"/>
+                    <label for="inp_eq3Controller_url" class="translate">lab_eq3Controller_url_short</label>
+                    <i><span class="translate">lab_eq3Controller_url_long</span></i>
                 </div>
                 <div class="col s6">
-                    <a id="fTestPath" class="btn"><span class="translate">btn_checkPath</span></a>
+                    <a id="fTestURL" class="btn"><span class="translate">btn_checkURL</span></a>
                 </div>
             </div>
             <div class="col s12">

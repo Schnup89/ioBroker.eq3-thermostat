@@ -32,17 +32,17 @@ systemDictionary = {
         "- Das eq3Controller.py-Script<br><br>"+
         "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)"
     },
-    "lab_eq3Controller_path_short": {
-        "en": "Path to eq3Controller.py",
-        "de": "Pfad zu eq3Controller.py"
+    "lab_eq3Controller_url_short": {
+        "en": "URL to eq3Webserver",
+        "de": "URL zu eq3WEbserver"
     },
-    "lab_eq3Controller_path_long": {
-        "en": "<a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  e.g. python3 /home/pi/eq3Controller.py",
-        "de": "<a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  z.B. python3 /home/pi/eq3Controller.py"
+    "lab_eq3Controller_url_long": {
+        "en": "e.g. http://192.168.1.100/eq3/",
+        "de": "z.B. http://192.168.1.100/eq3/"
     },
-    "btn_checkPath": {
-        "en": "Check Path",
-        "de": "Pfad testen",
+    "btn_checkURL": {
+        "en": "Check URL",
+        "de": "URL testen",
     },
     "lab_refresh_interval_short": {
         "en": "Refresh interval",
