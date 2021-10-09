@@ -170,9 +170,9 @@ class Eq3Thermostat extends utils.Adapter {
     onMessage(obj) {
         if (typeof obj === "object") {
             //TT, Pathcheck
-            if (obj.command === "checkEQ3Path") {
+            if (obj.command === "checkEQ3URL") {
                 //TT, save Command Result true/false
-                const bCMDRes = this.fCheckLiveEQ3Controller(obj.message.EQ3Path);
+                const bCMDRes = this.fCheckLiveEQ3Controller(obj.message.EQ3URL);
                 //TT, send Result back
                 if (obj.callback) this.sendTo(obj.from, obj.command, bCMDRes.toString(), obj.callback);
             }
@@ -180,9 +180,9 @@ class Eq3Thermostat extends utils.Adapter {
     }
     
 
-    fCheckLiveEQ3Controller(sPath) {
+    fCheckLiveEQ3Controller(sURL) {
         try {
-            const sCommand = sPath + " check";
+            const sCommand = sURL + " check";
             const sCmdRes = exec(sCommand).toString().trim();
             this.log.info("Result from Command \"" + sCommand + "\": " + sCmdRes);
             if (sCmdRes === "eq3OK") {
