@@ -7,7 +7,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
-const http = require('http');
+const axios = require('axios');
 
 let exec;
 let tmr_EQ3Update = null;
@@ -183,12 +183,23 @@ class Eq3Thermostat extends utils.Adapter {
 
     fCheckLiveEQ3Controller(sURL) {
         try {
-            http.get(sURL + "?mac=00:00:00:00:00:00", function(res) {
-                console.log("Got response: " + res.statusCode);
-                this.log.info("Body: " + res.body);
-              }).on('error', function(e) {
-                this.log.info("Got HTTP error: " + e.message);
-              });
+            axios
+                .get(sURL + "?mac=00:00:00:00:00:00")
+                .then(body => {
+                    this.log.info("Body-Status: " + body.data.status);
+                    this.log.info("Body: " + body);
+                    /*if (body.data.status !== 1) {
+                        adapter.log.error('Pushover error: ' + JSON.stringify(body.data.errors));
+                        return obj.callback && adapter.sendTo(obj.from, 'glances', { error: body.data.errors}, obj.callback);
+                    } else {
+                        adapter.log.debug('pushover POST succeeded:\n' + JSON.stringify(body.data));
+                        return obj.callback && adapter.sendTo(obj.from, 'glances', { result: body.data.status}, obj.callback);
+                    }*/
+                })
+                .catch(error => {
+                    this.log.info("HTTP-ERROR: " + error);
+                });
+
             const sCommand = sURL + " check";
             const sCmdRes = exec(sCommand).toString().trim();
             this.log.info("Result from Command \"" + sCommand + "\": " + sCmdRes);

@@ -23,7 +23,7 @@
         var getEQ3Devices = [];  //TT, Array4Table 
         function load(settings, onChange) {
             $('#fTestURL').on('click', (function () {
-                sendTo(null, 'checkEQ3URL', { EQ3URL: document.getElementById("inp_eq3Controller_URL").value }, function (response) {
+                sendTo(null, 'checkEQ3URL', { EQ3URL: document.getElementById("inp_eq3Controller_url").value }, function (response) {
                     if (response == "true") {
                         document.getElementById("fTestURL").style="background-color: green;";
                     } else {
