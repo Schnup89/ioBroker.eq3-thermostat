@@ -74,7 +74,7 @@
         "getEQ3Devices": [],
         "inp_eq3Controller_path": "expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
         "inp_refresh_interval": 5,
-        "inp_override_modemanual": 5
+        "inp_override_modemanual": false
     },
     "objects": [],
     "instanceObjects": []

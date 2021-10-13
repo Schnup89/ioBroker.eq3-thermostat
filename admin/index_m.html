@@ -34,12 +34,15 @@
                 }));
                 $('#fFindDevs').on('click', (function () {
                     document.getElementById("devText").hidden=true;
+                    document.getElementById("devText_found").hidden=true;
                     document.getElementById("devText_loading").hidden=false;
                     sendTo(null, 'findDevices', { EQ3Path: true }, function (response) {
                         if (response !== "error") {
-                            document.getElementById("devText_loading").innerHTML=response;
+                            document.getElementById("devText_loading").hidden=false;
+                            document.getElementById("devText_found").innerHTML=response;
                         }else{
-                            document.getElementById("devText_loading").innerHTML="Error";
+                            document.getElementById("devText_loading").hidden=false;
+                            document.getElementById("devText_found").innerHTML="Error";
                         }
                     });
                 }));

@@ -206,7 +206,7 @@ class Eq3Thermostat extends utils.Adapter {
     fCheckLiveEQ3Controller(sPath) {
         try {
         const stdout = execSync(sPath + " help").toString();  //print exp script help
-        this.log.info("res:" + stdout);
+        this.log.debug("PathCheck-Result: " + stdout);
             if (stdout.indexOf("Full-featured CLI for radiator thermostat eQ-3 CC-RT-BLE") > -1) {  //Script found :)
                 this.log.info("check successful!");
                 return true;
@@ -258,7 +258,13 @@ class Eq3Thermostat extends utils.Adapter {
                         this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
                         continue;
                     }
-
+                    //If Force Mode Manual is set
+                    if (this.config.inp_override_modemanual){
+                        if (!jRes['mode']['manual']) {   //If Mode is not manual
+                            //Set manual mode ! Dont check result, it's not critical, we have no time in this for-loop
+                            const stdout = execSync(sPath + " " + sDevMAC + " manual");
+                        }
+                    }
                     //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection
                     const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false];
                     this.fUpdateDevObj(aValues, sDevMAC, sDevName);
