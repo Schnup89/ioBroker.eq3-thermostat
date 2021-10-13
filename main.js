@@ -35,16 +35,17 @@ class Eq3Thermostat extends utils.Adapter {
     async onReady() {
         // Initialize your adapter here
         let bPreCheckErr = false;   //We can't stop the adapter since we need it 4 path check. Make preCheck, if error found don't run main functions
-        const version = process.version;
+        
+        /*const version = process.version;
         const va = version.split(".");
         if (va[0] === "v0" && va[1] === "10") {
             this.log.info("NODE Version = " + version + ", we need new exec-sync");
             // @ts-ignore
-            exec     = require("sync-exec");
+            const execSync     = require("sync-exec");
         } else {
             this.log.info("NODE Version = " + version + ", we need new execSync");
-            exec     = require("child_process").execSync;
-        }
+            const execSync     = require("child_process").execSync;
+        }*/
 
         this.log.info("##### LOAD CONFIG ##### ");
         if (!this.config.getEQ3Devices.length) {

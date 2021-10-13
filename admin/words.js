@@ -53,12 +53,20 @@ systemDictionary = {
         "de": "In Minuten",
     },
     "lab_button_step_short": {
-        "en": "Temperature steps for plus/minus button",
-        "de": "Temperaturschritte für Plus/Minus button",
+        "en": "Temperature steps for plus/minus button (experimental)",
+        "de": "Temperaturschritte für Plus/Minus button (experimental)",
     },
     "lab_button_step_long": {
         "en": "0.5°C or 1.0°C",
         "de": "0,5°C oder 1,0°C",
+    },
+    "lab_override_modemanual_short": {
+        "en": "Always manual mode",
+        "de": "Manuellen Modus erzwingen",
+    },
+    "lab_override_modemanual_long": {
+        "en": "Test",
+        "de": "Test",
     },
     "lab_devices": {
         "en": "Devicelist",
@@ -73,12 +81,12 @@ systemDictionary = {
         "de": "Suche nach Geräten, bitte 10 Sekunden warten... <br> Gefundene Geräte erscheinen hier sobald die Suche abgeschlossen ist!",
     },
     "lab_BtnAddManual": {
-        "en": "Manual",
-        "de": "Manuell",
+        "en": "Add Device",
+        "de": "Hinzufügen",
     },
     "lab_BtnAddScan": {
-        "en": "BT Scan (WIP)",
-        "de": "BT Scan (In der Entwicklung)",
+        "en": "BT Scan (experimental)",
+        "de": "BT Scan (experimental)",
     },
     "eq3MAC": {
         "en": "eq3 MAC-Address",
