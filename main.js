@@ -262,7 +262,8 @@ class Eq3Thermostat extends utils.Adapter {
                     if (this.config.inp_override_modemanual){
                         if (!jRes['mode']['manual']) {   //If Mode is not manual
                             //Set manual mode ! Dont check result, it's not critical, we have no time in this for-loop
-                            const stdout = execSync(sPath + " " + sDevMAC + " manual");
+                            this.log.info("Wrong Mode detected, changing to Manual-Mode for Device: \"" + sDevMAC + "\" ");
+                            execSync(sPath + " " + sDevMAC + " manual");
                         }
                     }
                     //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection
