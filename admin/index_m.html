@@ -20,15 +20,26 @@
     <script type="text/javascript">
 
         // This will be called by the admin adapter when the settings page loads
-        var getEQ3Devices = [];  //TT, Array4Table 
+        var getEQ3Devices = [];  //TT, Array4Table
         function load(settings, onChange) {
-            $('#fTestURL').on('click', (function () {
-                sendTo(null, 'checkEQ3URL', { EQ3URL: document.getElementById("inp_eq3Controller_url").value }, function (response) {
+            $('#fTestPath').on('click', (function () {
+                sendTo(null, 'checkEQ3Path', { EQ3Path: document.getElementById("inp_eq3Controller_path").value }, function (response) {
                     if (response == "true") {
-                        document.getElementById("fTestURL").style="background-color: green;";
+                        document.getElementById("fTestPath").style="background-color: green;";
                     } else {
-                        document.getElementById("fTestURL").style="background-color: red;";
+                        document.getElementById("fTestPath").style="background-color: red;";
                         showMessage("Check ioBroker Log");
+                    }
+                });
+            }));
+            $('#fFindDevs').on('click', (function () {
+                document.getElementById("devText").hidden=true;
+                document.getElementById("devText_loading").hidden=false;
+                sendTo(null, 'findDevices', { EQ3Path: true }, function (response) {
+                    if (response !== "error") {
+                        document.getElementById("devText_loading").innerHTML=response;
+                    }else{
+                        document.getElementById("devText_loading").innerHTML="Error";
                     }
                 });
             }));
@@ -103,12 +114,12 @@
                 <p class="translate title">lab_general</p>
                 <p class="translate info">text_general</p>
                 <div class="input-field col s6">
-                    <input class="value" id="inp_eq3Controller_url" type="text"/>
-                    <label for="inp_eq3Controller_url" class="translate">lab_eq3Controller_url_short</label>
-                    <i><span class="translate">lab_eq3Controller_url_long</span></i>
+                    <input class="value" id="inp_eq3Controller_path" type="text"/>
+                    <label for="inp_eq3Controller_path" class="translate">lab_eq3Controller_path_short</label>
+                    <i><span class="translate">lab_eq3Controller_path_long</span></i>
                 </div>
                 <div class="col s6">
-                    <a id="fTestURL" class="btn"><span class="translate">btn_checkURL</span></a>
+                    <a id="fTestPath" class="btn"><span class="translate">btn_checkPath</span></a>
                 </div>
             </div>
             <div class="col s12">
@@ -134,11 +145,14 @@
         <div class="row">
             <div id="tab-getEQ3Devices" class="col s12 page">
                 <p class="translate title">lab_devices</p>
-                <p class="translate info">text_devices</p>
+                <p class="translate info" id="devText">text_devices</p>
+                <p class="translate info" id="devText_loading" style="color:red;" hidden>text_devices_loading</p>
+                <p class="translate info" id="devText_found" hidden></p>
                 <div class="col s12" id="getEQ3Devices">
                     <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                     <span class="translate info" style="margin-right: 50px;">lab_BtnAddManual</span>
-                    <a class="btn-floating waves-effect waves-light grey table-button-add disabled"><i class="material-icons">settings_bluetooth</i></a>
+                    <a class="btn-floating waves-effect waves-light blue btn" id="fFindDevs"><i class="material-icons">settings_bluetooth</i></a>
+
                     <span class="translate info">lab_BtnAddScan</span>
 
                     <div class="table-values-div">

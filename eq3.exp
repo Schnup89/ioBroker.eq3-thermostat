@@ -1,0 +1,1268 @@
+
+#!/usr/bin/expect
+#
+# Shell script in order to control eQ-3 radiator thermostat
+#
+# Version: 2020-12-29
+#
+# MIT License
+#
+# Copyright (c) 2017-2020 Martin Heckenbach
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# sets output to stdout and debug
+log_user 0
+
+set HELP(about) "\nFull-featured CLI for radiator thermostat eQ-3 CC-RT-BLE\n"
+set HELP(usage) "Usage: \[<hciX>\] <mac/alias> <command> <parameters...>\n"
+set HELP(sync) "\
+  sync                                           - Syncs time and prints target temperature and mode"
+set HELP(window) "\
+  window <temp> <h:mm>                           - Sets temperature in °C and period for open window mode\n\
+\                                                 temp: 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5 \n\
+\                                                 h:mm: time where minutes in intervals of 5 minutes but max. 1 hour, e.g. 1:00"
+set HELP(auto) "\
+  auto                                           - Sets auto mode and deactivates vacation mode if active."
+set HELP(manual) "\
+  manual                                         - Sets manual mode and deactivates vacation mode if active."
+set HELP(comforteco) "\
+  comforteco <temp_comfort> <temp_eco>           - Sets comfort and eco temperature in °C\n\
+\                                                 temp: 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5"
+set HELP(offset) "\
+  offset <offset>                                - Sets the offset temperature in °C\n\
+\                                                 offset: temperature between -3.5 and 3.5 in intervals of 0.5°C, e.g. 1.5"
+set HELP(comfort) "\
+  comfort                                        - Sets target temperature to programmed comfort temperature"
+set HELP(eco) "\
+  eco                                            - Sets target temperature to programmed eco temperature"
+set HELP(temperature) "\
+  temp <temp>                                    - Sets target temperature to given value\n\
+\                                                 temp: 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5"
+set HELP(vacation) "\
+  vacation <yy-mm-dd> <hh:mm> <temp>             - Activates vacation mode until date and time and temperature in °C\n\
+\                                                 yy-mm-dd: until date, e.g. 17-03-31\n\
+\                                                 hh:mm: until time where minutes must be 00 or 30, e.g. 23:30\n\
+\                                                 temp: 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5
+\ vacation <hh> <temp>                           - Activates vacation mode for given period in hours and temperature in °C\n\
+\                                                 hh: Period in hours\n\
+\                                                 temp: 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5"
+set HELP(on) "\
+  on                                             - Sets thermostat to permanent on (30°C)"
+set HELP(off) "\
+  off                                            - Sets thermostat to permanent off (4.5°C)"
+set HELP(boost) "\
+  boost                                          - Activates boost mode for 5 minutes"
+set HELP(boost_off) "\
+  boost off                                      - Deactivates boost mode"
+set HELP(timer) "\
+  timers                                         - Reads all timers and prints them human friendly\n\
+  timer-settings                                 - Reads all timers and prints them ready for re-configuration\n\
+  timer <day>                                    - Reads timer for given day\n\
+  timer <day> <base> <hh:mm> <temp> <hh:mm> ...  - Sets timer for given day and up to 7 events with temperature and time\n\
+\                                                 day:  mon, tue, wed, thu, fri, sat, sun, work, weekend, everyday, today, tomorrow\n\
+\                                                 base temperature before first and after last schedule: 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5 \n\
+\                                                 target temperature 5.0 to 29.5 in intervals of 0.5°C, e.g. 19.5 \n\
+\                                                 hh:mm: time where minutes must be in intervals of 10 minutes, e.g. 23:40"
+set HELP(serial) "\
+  serial                                         - Prints serial of thermostat (see little badge where batteries are)"
+set HELP(lock) "\
+  lock                                           - Locks thermostat (LOC)"
+set HELP(unlock) "\
+  unlock                                         - Unlocks thermostat"
+set HELP(clear) "\
+  clear                                          - Clear buffer of last request (will be printed in debug mode, set log_user to 1 in code!)"
+set HELP(status) "\
+status                                         - Syncs time, Prints target temperature, mode and timers\n\
+\                                                 (in debug mode also last command even of official app, set log_user to 1 in code!)"
+set HELP(json) "\
+json                                           - Same as status but in json format"
+set HELP(reset) "\
+  reset                                          - Factory reset"
+
+set mac                         ""
+set hci                         ""
+set cmd                         ""
+
+set timeout                     10
+
+set DELAY                       100
+
+set MAC_PATTERN                 "\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}"
+set KNOWN_EQIVAS_FILE           "~/.known_eqivas"
+array set known_eqivas          {}
+
+set INIT(device)                1
+set INIT(mode)                  2
+set INIT(timer)                 4
+set INIT(serial)                8
+
+set HANDLES(name)              "0321"
+set HANDLES(vendor)            "0311"
+set HANDLES(request)           "0411"
+set HANDLES(notification)      "0421"
+
+set REQUESTS(setTime)          "03"
+
+set REQUESTS(setTimer)         "10"
+set REQUESTS(setComfortEco)    "11"
+set REQUESTS(setOffset)        "13"
+set REQUESTS(setWindowOpen)    "14"
+set REQUESTS(getTimer)         "20"
+set REQUESTS(setAutoMode)      "4000"
+set REQUESTS(setManualMode)    "4040"
+set REQUESTS(setVacationMode)  "40"
+set REQUESTS(startBoost)       "45ff"
+set REQUESTS(stopBoost)        "4500"
+
+set REQUESTS(setTemperature)   "41"
+set REQUESTS(setOn)            "413c"
+set REQUESTS(setOff)           "4109"
+set REQUESTS(setComfortTemperature) "43"
+set REQUESTS(setEcoTemperature) "44"
+
+set REQUESTS(lock)             "8001"
+set REQUESTS(unlock)           "8000"
+set REQUESTS(serial)           "00"
+set REQUESTS(reset)            "f0"
+set REQUESTS(clear)            "00000000000000000000000000000000"
+
+set MODE_BY_NAME(auto)         0
+set MODE_BY_NAME(manual)       1
+set MODE_BY_NAME(vacation)     2
+set MODE_BY_NAME(boost)        4
+set MODE_BY_NAME(dst)          8
+set MODE_BY_NAME(window)       16
+set MODE_BY_NAME(locked)       32
+set MODE_BY_NAME(unknown)      64
+set MODE_BY_NAME(battery)      128
+
+set MODE(0)                   "auto"
+set MODE(1)                   "manual"
+set MODE(2)                   "vacation"
+set MODE(4)                   "boost"
+set MODE(8)                   "dst"
+set MODE(16)                  "open window"
+set MODE(32)                  "locked"
+set MODE(64)                  "unknown"
+set MODE(128)                 "low battery"
+
+set thermostat(mac)                 ""
+set thermostat(name)                ""
+set thermostat(alias)               ""
+set thermostat(vendor)              ""
+set thermostat(last_request)        ""
+set thermostat(serial)              ""
+set thermostat(firmware)            ""
+set thermostat(pin)                 ""
+set thermostat(status)              ""
+set thermostat(mode)                0
+set thermostat(valve)               0.0
+set thermostat(temperature)         0.0
+set thermostat(vacation_date)       ""
+set thermostat(vacation_time)       ""
+set thermostat(comfort_temperature) 0.0
+set thermostat(eco_temperature)     0.0
+set thermostat(window_temperature)  0.0
+set thermostat(window_time)         ""
+set thermostat(offset_temperature)  0.0
+
+set DAYS                    "Sat Sun Mon Tue Wed Thu Fri Weekend Work Everyday"
+
+proc log {l} {
+  if {[log_user] != 0} {
+    puts $l
+  }
+}
+
+proc help {} {
+  global HELP
+  puts $HELP(about)
+  puts $HELP(usage)
+  puts "Sync:"
+  puts $HELP(sync)
+
+  puts "\nMode:"
+  puts $HELP(auto)
+  puts $HELP(manual)
+
+  puts "\nTemperature:"
+  puts $HELP(comfort)
+  puts $HELP(eco)
+  puts $HELP(boost)
+  puts $HELP(boost_off)
+  puts $HELP(temperature)
+  puts $HELP(on)
+  puts $HELP(off)
+
+  puts "\nTimers:"
+  puts $HELP(timer)
+  puts $HELP(vacation)
+
+  puts "\nConfiguration:"
+  puts $HELP(comforteco)
+  puts $HELP(window)
+  puts $HELP(offset)
+
+  puts "\nOthers:"
+  puts $HELP(lock)
+  puts $HELP(unlock)
+  puts $HELP(serial)
+  puts $HELP(status)
+  puts $HELP(json)
+  puts $HELP(clear)
+  puts $HELP(reset)
+  puts ""
+}
+
+proc readKnownEqivas {} {
+  global MAC_PATTERN
+  global KNOWN_EQIVAS_FILE
+  global known_eqivas
+
+  if {[info exists ::env(KNOWN_EQUIVAS)] == 1} {
+    set KNOWN_EQIVAS_FILE "$::env(KNOWN_EQUIVAS)"
+  }
+
+  if {[file exists "$KNOWN_EQIVAS_FILE"] == 0} {
+    return
+  }
+
+  set fp [open "$KNOWN_EQIVAS_FILE" r]
+  fconfigure $fp -buffering line
+
+  gets $fp data
+  while {$data != ""} {
+    regexp "($MAC_PATTERN) (\.+)" $data matched _mac _name
+
+    set known_eqivas($_mac) $_name
+    gets $fp data
+  }
+
+  close $fp
+}
+
+proc lookupKnownEqivaByName {pattern} {
+  global known_eqivas
+  global thermostat
+  foreach _mac [lsort [array names known_eqivas]] {
+    if { [string first "$pattern" $known_eqivas($_mac) ] != -1 } {
+      set thermostat(alias) $known_eqivas($_mac)
+      return $_mac
+    }
+  }
+  return ""
+}
+
+proc parseArgv {argv} {
+  global MAC_PATTERN
+  global KNOWN_EQIVAS_FILE
+  global mac
+  global hci
+  global cmd
+
+  if {[llength $argv] < 2} {
+    help
+    exit
+  }
+
+  if {[string match "hci?" [lindex $argv 0]]} {
+    set hci [lindex $argv 0]
+    set argv [lreplace $argv 0 0]
+  }
+
+  set id [lindex $argv 0]
+  set argv [lreplace $argv 0 0]
+
+  set is_mac [regexp -nocase "$MAC_PATTERN" $id]
+  if {$is_mac == 1 } {
+    set mac $id
+  } else {
+    readKnownEqivas
+    set mac [lookupKnownEqivaByName $id]
+  }
+
+  if { $mac == "" } {
+    puts "Device \"$id\" isn't known yet. Please check $KNOWN_EQIVAS_FILE file before using alias."
+    exit
+  }
+
+  set cmd [join $argv " "]
+}
+
+proc checkArgs {argv req command reg} {
+  global HELP
+  set check [regexp $reg [concat $argv]]
+  if {[llength $argv] <= $req || $check == 0} {
+    puts $HELP(usage)
+    puts $HELP($command)
+    puts ""
+    exit 1
+  }
+}
+
+proc connect {} {
+  global thermostat
+  global mac
+
+  expect "\[LE\]"
+  send "connect $mac\r"
+  expect "Connection successful" {
+    set thermostat(mac) $mac
+    return 0
+  }
+  return 1
+}
+
+proc disconnect {} {
+  global DELAY
+  send "disconnect\r"
+  after $DELAY
+}
+
+proc init {level} {
+  global INIT
+
+  set connected [connect]
+
+  if { $connected == 0} {
+    if {$level & $INIT(device)} {
+      readDeviceInfo
+    }
+    if {$level & $INIT(mode)} {
+      syncTime
+    }
+    if {$level & $INIT(timer)} {
+      readTimers
+    }
+  } else {
+    puts "Connection failed."
+    exit -1
+  }
+  return $connected
+}
+
+proc readHandle {handle} {
+  global DELAY
+  log "readHandle: char-read-hnd $handle"
+  send "char-read-hnd $handle\r"
+  expect {
+    "Characteristic value/descriptor: " {
+      log "ok"
+    }
+  }
+  expect -re "\[0-9a-f\ ]*" {
+    log "ok"
+  }
+  after $DELAY
+  set value $expect_out(buffer)
+  log "readHandle: $handle $value"
+  return $value
+}
+
+proc writeRequest {command value} {
+  global HANDLES
+  global REQUESTS
+  global DELAY
+  global thermostat
+
+  log "writeRequest: char-write-req $HANDLES(request) $command $value"
+  set thermostat(last_request) "$command $value"
+
+  send "char-write-req $HANDLES(request) $command$value\r"
+  expect "Characteristic value was written successfully" {
+    log "ok"
+  }
+  expect "Notification handle = 0x$HANDLES(notification) value: " {
+    log "ok"
+  }
+  expect -re "\[0-9a-f\ ]*" {
+    log "ok"
+  }
+
+  after $DELAY
+  set notification $expect_out(buffer)
+  log "notification: 0x$HANDLES(notification) $notification"
+  return $notification
+}
+
+proc writeHandle {handle value} {
+  global DELAY
+
+  log "writeHandle: char-write-req $handle $value"
+  send "char-write-req $handle $value\r"
+  expect "Characteristic value was written successfully" {
+    log "ok"
+  }
+  expect -re "\[0-9a-f\ ]*" {
+    log "ok"
+  }
+
+  after $DELAY
+}
+
+proc hexToDecimal {s} {
+  scan $s %x d
+  return $d
+}
+
+proc decimalToHex {d} {
+  scan $d %d d
+  set h [format %4.2x $d]
+  return [string trim $h]
+}
+
+proc hexToASCII {hex} {
+  set h [join $hex ""];
+  return [binary format H* $h]
+}
+
+proc asciiToHex {s} {
+  set s [string range $s 0 15]
+  set hex ""
+  foreach x [split $s ""] {
+    append hex [format %2.2X [scan $x %c]]
+  }
+  return $hex
+}
+
+proc hexToTemperature {hex} {
+  set value [hexToDecimal $hex]
+  return [expr $value / 2.0]
+}
+
+proc hexToDate {xyy xmm xdd} {
+  return "[format "%02d" [expr 2000 + [hexToDecimal $xyy]]]-[format "%02d" [hexToDecimal $xmm]]-[format "%02d" [hexToDecimal $xdd]]"
+}
+
+proc currentTime {} {
+  return [clock format [expr [clock seconds]] -format %H:%M:%S]
+}
+
+proc currentDate {} {
+  return [clock format [expr [clock seconds]] -format %y-%m-%d]
+}
+
+proc timeToHex {time} {
+  set part [split $time ":"]
+  scan [lindex $part 0] %d hours
+  scan [lindex $part 1] %d minutes
+
+  set hex "[decimalToHex $hours][decimalToHex $minutes]"
+
+  if {[llength $part] == 3} {
+    scan [lindex $part 2] %d seconds
+    append hex [decimalToHex $seconds]
+  }
+
+  return $hex
+}
+
+proc dateToHex {time} {
+  set part [split $time "-"]
+  scan [lindex $part 0] %d year
+  scan [lindex $part 1] %d month
+  scan [lindex $part 2] %d day
+
+  return "[decimalToHex $year][decimalToHex $month][decimalToHex $day]"
+}
+
+proc tempToHex {temp} {
+  return [decimalToHex [expr int($temp * 2)]]
+}
+
+proc minutesToTime {value multiplicator} {
+  set seconds [expr 60 * $multiplicator * $value]
+  set time ""
+  if {$seconds == 86400} {
+    set time "24:00"
+  } else {
+    set time [clock format [expr 60 * $multiplicator * $value] -format %H:%M -gmt true]
+  }
+  return $time
+}
+
+proc timeToMinutes {daytime devider} {
+  set part [split $daytime ":"]
+  scan [lindex $part 0] %d hours
+  scan [lindex $part 1] %d minutes
+
+  set enctime [expr ($hours * 60 + $minutes) / $devider]
+
+  return $enctime
+}
+
+proc getDayOrdinal {weekday} {
+  global DAYS
+
+  set todayOrdinal [clock format [clock seconds] -format %u]
+  if {$weekday == "today"} {
+    return [expr ($todayOrdinal + 1) % 7]
+  } elseif {$weekday == "tomorrow"} {
+    return [expr ($todayOrdinal + 2) % 7]
+  } elseif {$weekday == "weekend"} {
+    return 7
+  } elseif {$weekday == "work"} {
+    return 8
+  } elseif {$weekday == "everyday"} {
+    return 9
+  }
+
+  for {set day 0} {$day < 7} {incr day} {
+   if {[string tolower [lindex $DAYS $day]] == $weekday} {
+      break
+    }
+  }
+
+  return $day
+}
+
+proc getModeName {} {
+  global MODE
+  global MODE_BY_NAME
+  global thermostat
+
+  set name ""
+  if {$thermostat(temperature) == 30} {
+    set name "on"
+    return $name
+  } elseif {$thermostat(temperature) == 4.5} {
+    set name "off"
+    return $name
+  }
+  foreach key [lsort [array names MODE]] {
+    if {[expr $key == 0 && [hexToDecimal $thermostat(mode)] % 2 == 0] || [hexToDecimal $thermostat(mode)] & $key} {
+      append name $MODE($key)
+      append name " "
+    }
+  }
+  return [string trim $name]
+}
+
+proc getModeAsJson {} {
+  global MODE
+  global MODE_BY_NAME
+  global thermostat
+
+  set json "\{\n"
+  foreach key [lsort [array names MODE]] {
+
+    if {[expr $key == 0 && [hexToDecimal $thermostat(mode)] % 2 == 0] || [hexToDecimal $thermostat(mode)] & $key} {
+      set v "true"
+    } else {
+      set v "false"
+    }
+    append json "    \"" $MODE($key) "\" : " $v ",\n"
+  }
+  append json "    \"on\" : " [expr $thermostat(temperature) == 30 ? "true" : "false" ] ",\n"
+  append json "    \"off\" : " [expr $thermostat(temperature) == 4.5 ? "true" : "false" ] "\n"
+  append json "  \}"
+  return $json
+}
+
+proc readDeviceInfo {} {
+  global HANDLES
+  global thermostat
+
+  set thermostat(name) [hexToASCII [readHandle $HANDLES(name)]]
+  set thermostat(vendor) [hexToASCII [readHandle $HANDLES(vendor)]]
+  set thermostat(last_request) [readHandle $HANDLES(request)]
+}
+
+proc parseMode {raw_status} {
+  global MODE_BY_NAME
+  global thermostat
+
+  set thermostat(status) $raw_status
+  set thermostat(mode) [lindex $raw_status 2]
+  set thermostat(valve) [hexToDecimal [lindex $raw_status 3]]
+  set thermostat(temperature) [hexToTemperature [lindex $raw_status 5]]
+
+  if {[hexToDecimal $thermostat(mode)] & $MODE_BY_NAME(vacation)} {
+    set thermostat(vacation_date) [hexToDate [lindex $raw_status 7] [lindex $raw_status 9] [lindex $raw_status 6]]
+    set thermostat(vacation_time) [minutesToTime [hexToDecimal [lindex $raw_status 8]] 30]
+  } else {
+    set thermostat(vacation_date) ""
+    set thermostat(vacation_time) ""
+  }
+
+  if {[llength $raw_status] >= 15} {
+    set thermostat(window_temperature) [hexToTemperature [lindex $raw_status 10]]
+    set thermostat(window_time) [minutesToTime [hexToDecimal [lindex $raw_status 11]] 5]
+    set thermostat(comfort_temperature) [hexToTemperature [lindex $raw_status 12]]
+    set thermostat(eco_temperature) [hexToTemperature [lindex $raw_status 13]]
+    set thermostat(offset_temperature) [expr [hexToTemperature [lindex $raw_status 14]] - 3.5]
+  } else {
+    set thermostat(window_temperature) 0
+    set thermostat(window_time) ""
+    set thermostat(comfort_temperature) 0
+    set thermostat(eco_temperature) 0
+    set thermostat(offset_temperature) 0
+  }
+
+}
+
+proc readTimer {day} {
+  global REQUESTS
+  global thermostat
+
+  set raw_timer [writeRequest $REQUESTS(getTimer) [decimalToHex $day]]
+  set thermostat("timer_raw_$day") $raw_timer
+
+  set event 1
+  set start "00:00"
+  while {$event <= 7 && $start != "24:00"} {
+    set key "[lindex $day 0]_[lindex $event 0]"
+    set thermostat("timer_start_$key") $start
+    set end [minutesToTime [hexToDecimal [lindex $raw_timer [expr 2 * $event + 1 ]]] 10]
+    set thermostat("timer_end_$key") $end
+    set thermostat("timer_temperature_$key") [hexToTemperature [lindex $raw_timer [expr 2 * $event]]]
+
+    incr event
+    set start $end
+  }
+}
+
+proc readTimers {} {
+  global DAYS
+
+  for {set day 0} {$day < 9} {incr day} {
+    readTimer $day
+  }
+}
+
+proc printDevice {} {
+  global HANDLES
+  global thermostat
+
+  append out "Device mac:\t\t\t$thermostat(mac)\n"
+
+  if {[log_user] == 0} {
+    append out "Device name:\t\t\t$thermostat(name)\n"
+    append out "Device vendor:\t\t\t$thermostat(vendor)\n"
+  } else {
+    append out "Device name (0x$HANDLES(name)):\t\t$thermostat(name)\n"
+    append out "Device vendor (0x$HANDLES(vendor)):\t\t$thermostat(vendor)\n"
+  }
+
+  if {$thermostat(alias) != ""} {
+    append out "Alias:\t\t\t\t$thermostat(alias)"
+  }
+
+  append out "\n"
+
+  return $out
+}
+
+proc toJson {} {
+  global REQUESTS
+  global DAYS
+  global MODE_BY_NAME
+  global thermostat
+
+  set connected [connect]
+
+
+  if { $connected != 0} {
+    puts "\{ \"error\" : \"Connection failed.\" \}"
+    exit -1
+  }
+
+  readTimers
+
+  set currentTime [currentTime]
+  set currentDate [currentDate]
+  set raw_status [writeRequest $REQUESTS(setTime) "[dateToHex $currentDate][timeToHex $currentTime]"]
+  parseMode $raw_status
+
+  append out "\{\n"
+  append out "  \"mac\" : \"$thermostat(mac)\",\n"
+  if {$thermostat(alias) != ""} {
+    append out "  \"alias\" : \"$thermostat(alias)\",\n"
+  }
+  append out "  \"temperature\" : $thermostat(temperature),\n"
+  append out "  \"valve\" : $thermostat(valve),\n"
+  append out "  \"mode\" : [getModeAsJson],\n"
+  if {[hexToDecimal $thermostat(mode)] & $MODE_BY_NAME(vacation)} {
+    append out "  \"vacation\" : \"$thermostat(vacation_date) $thermostat(vacation_time)\",\n"
+  } else {
+    append out "  \"vacation\" : null,\n"
+  }
+  if {[llength $thermostat(status)] >= 15} {
+    append out "  \"comfort_temperature\" : $thermostat(comfort_temperature),\n"
+    append out "  \"eco_temperature\" : $thermostat(eco_temperature),\n"
+    append out "  \"open_window_temperature\" : $thermostat(window_temperature),\n"
+    append out "  \"open_window_time\" : \"$thermostat(window_time)\",\n"
+    append out "  \"offset_temperature\" : $thermostat(offset_temperature),\n"
+  }
+  append out "  \"timers\" : \{\n"
+  for {set day 0} {$day < 9} {incr day} {
+    append out "    \"[lindex $DAYS $day]\" : \[\n"
+    for {set event 1} {$event <= 7} {incr event} {
+      set key "[lindex $day 0]_[lindex $event 0]"
+      append out "      \{\n"
+      append out "        \"from\" : \"$thermostat("timer_start_$key")\",\n"
+      append out "        \"to\" : \"$thermostat("timer_end_$key")\",\n"
+      append out "        \"temperature\" : $thermostat("timer_temperature_$key")\n"
+      append out "      \}"
+      if {"24:00" == "$thermostat("timer_end_$key")"} {
+        break
+      }
+      append out ",\n"
+    }
+    append out "\n    ]"
+    if {$day < 8} {
+      append out ","
+    }
+    append out "\n"
+  }
+  append out "  \}\n"
+  append out "\}"
+
+  puts $out
+}
+
+
+proc printStatus {} {
+  global HANDLES
+  global REQUESTS
+  global MODE_BY_NAME
+  global thermostat
+
+  if {[log_user] != 0} {
+    append out "Status (0x$HANDLES(request) $REQUESTS(setTime)):\t\t$thermostat(status)\n"
+  }
+
+  append out "Temperature:\t\t\t$thermostat(temperature)°C\n"
+  append out "Valve:\t\t\t\t$thermostat(valve)%\n"
+  append out "Mode:\t\t\t\t[getModeName]\n"
+
+  if {[hexToDecimal $thermostat(mode)] & $MODE_BY_NAME(vacation)} {
+    append out "Vacation mode:\t\t\ton\n"
+    append out "Vacation until:\t\t\t$thermostat(vacation_date) $thermostat(vacation_time)\n"
+  } else {
+    append out "Vacation mode:\t\t\toff\n"
+  }
+
+  if {[llength $thermostat(status)] >= 15} {
+    append out "\nComfort temperature:\t\t$thermostat(comfort_temperature)°C\n"
+    append out "Eco temperature:\t\t$thermostat(eco_temperature)°C\n"
+    append out "\nOpen window temperature:\t$thermostat(window_temperature)°C\n"
+    append out "Open window time:\t\t$thermostat(window_time)\n"
+    append out "\nOffset temperature:\t\t$thermostat(offset_temperature)°C\n"
+  }
+
+  if {[log_user] != 0} {
+    append out "\nLast request (0x$HANDLES(request)):\t\t$thermostat(last_request)\n"
+  }
+
+  return $out
+}
+
+proc printTimer {day} {
+  global DAYS
+  global HANDLES
+  global REQUESTS
+  global thermostat
+
+  append out "\n"
+  append out "Timer for [lindex $DAYS $day]"
+  if {[log_user] != 0} {
+    append out " (0x$HANDLES(request) $REQUESTS(getTimer)[decimalToHex $day]):\t$thermostat("timer_raw_$day")\n"
+  } else {
+    append out ":\n"
+  }
+  for {set event 1} {$event <= 7} {incr event} {
+    set key "[lindex $day 0]_[lindex $event 0]"
+    append out "\t$thermostat("timer_start_$key") - $thermostat("timer_end_$key"):\t$thermostat("timer_temperature_$key")°C\n"
+    if {"24:00" == "$thermostat("timer_end_$key")"} {
+      break
+    }
+  }
+  return $out
+}
+
+proc dumpTimer {day} {
+  global DAYS
+  global thermostat
+
+  set out "timer "
+  append out [string tolower [lindex $DAYS $day]]
+  append out " "
+  for {set event 1} {$event <= 7} {incr event} {
+    set key "[lindex $day 0]_[lindex $event 0]"
+    if {"00:00" == "$thermostat("timer_start_$key")"} {
+      append out "$thermostat("timer_temperature_$key") "
+      continue
+    }
+
+    append out "$thermostat("timer_start_$key") $thermostat("timer_temperature_$key") "
+
+    if {"24:00" == "$thermostat("timer_end_$key")"} {
+      append out "$thermostat("timer_end_$key")"
+      break
+    }
+  }
+
+  append out "\n"
+  return $out
+}
+
+proc dumpTimers {} {
+  set out ""
+  for {set day 0} {$day < 7} {incr day} {
+    append out [dumpTimer $day]
+  }
+  return $out
+}
+
+proc printTimers {} {
+  global DAYS
+
+  set todayOrdinal [clock format [clock seconds] -format %u]
+
+  set out ""
+  for {set day 0} {$day < 7} {incr day} {
+    append out [printTimer [expr ($day + $todayOrdinal + 1) % 7]]
+  }
+
+  return $out
+}
+
+proc dumpThermostat {} {
+  append out [printTimers]
+  append out "\n"
+  append out [printDevice]
+  puts $out
+}
+
+proc syncTime {} {
+  global REQUESTS
+  global timeout
+
+  set currentTime [currentTime]
+  set currentDate [currentDate]
+  set raw_status [writeRequest $REQUESTS(setTime) "[dateToHex $currentDate][timeToHex $currentTime]"]
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded after sync request in time ($timeout sec.)"
+    exit -1
+  }
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+
+}
+
+proc setVacationMode {date daytime temp} {
+  global REQUESTS
+  global timeout
+
+  set part [split $date "-"]
+  scan [lindex $part 0] %d year
+  scan [lindex $part 1] %d month
+  scan [lindex $part 2] %d day
+
+  set enctime [timeToMinutes $daytime 30]
+  set enctemp [expr ($temp * 2 + 128)]
+
+  set raw_status [writeRequest $REQUESTS(setVacationMode) "[decimalToHex $enctemp][decimalToHex $day][decimalToHex $year][decimalToHex $enctime][decimalToHex $month]"]
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded after vacation mode request in time ($timeout sec.)"
+    exit -1
+  }
+
+  puts "\nVacation mode successfully set"
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc setAwayMode {hours temp} {
+  set target_time [expr (int([clock seconds] / 1800 + 1) * 1800 + $hours * 3600)]
+  set daytime [clock format $target_time -format %H:%M]
+  set date [clock format $target_time -format %y-%m-%d]
+
+  setVacationMode $date $daytime $temp
+}
+
+proc getTimer {weekday} {
+  global DAYS
+
+  set day [getDayOrdinal $weekday]
+
+  readTimer $day
+  puts [printTimer $day]
+}
+
+proc setTimer {params} {
+  global REQUESTS
+  global DAYS
+  global thermostat
+
+  set day [getDayOrdinal [lindex $params 0]]
+
+  set enctimer [decimalToHex $day]
+
+  set timer 1
+  set schedule ""
+  while {$timer < [llength $params] && $timer < 14} {
+    append enctimer [tempToHex [lindex $params $timer]]
+    set schedule [lindex $params [expr $timer + 1]]
+    append enctimer [decimalToHex [timeToMinutes $schedule 10]]
+    set timer [expr $timer + 2]
+  }
+  if {$schedule != "24:00"} {
+    append enctimer [tempToHex [lindex $params 1]]
+    append enctimer [decimalToHex [timeToMinutes "24:00" 10]]
+  }
+  append enctimer $REQUESTS(clear)
+  set enctimer [string range $enctimer [expr [llength $enctimer] - 1] 29]
+  writeRequest $REQUESTS(setTimer) $enctimer
+
+  puts "Timer set: $params"
+}
+
+proc setComfortEco {comfort eco} {
+  global REQUESTS
+  global timeout
+
+  set raw_status [writeRequest $REQUESTS(setComfortEco) "[tempToHex $comfort][tempToHex $eco]"]
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded to after comfort/eco request in time ($timeout sec.)"
+    exit -1
+  }
+
+  puts "\nComfort and eco temperature successfully set"
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc setWindowMode {temp time} {
+  global REQUESTS
+
+  set part [split $time ":"]
+  scan [lindex $part 0] %d hours
+  scan [lindex $part 1] %d minutes
+
+  set period [expr ($minutes + $hours * 60) / 5]
+  if { $period > 12 } {
+    set period 12
+  }
+
+  set raw_status [writeRequest $REQUESTS(setWindowOpen) "[tempToHex $temp][decimalToHex $period]"]
+
+  puts "\nWindow open temperature and time successfully set"
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc setOffset {temp} {
+  global REQUESTS
+  global timeout
+
+  set raw_status [writeRequest $REQUESTS(setOffset) "[decimalToHex [expr ($temp + 3.5) / 0.5]]"]
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded after offset request in time ($timeout sec.)"
+    exit -1
+  }
+
+  puts "\nOffset temperature successfully set"
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc setMode {mode} {
+  global REQUESTS
+  global timeout
+
+  switch $mode {
+    "auto" {
+      set raw_status [writeRequest $REQUESTS(setAutoMode) ""]
+    }
+    "manual" {
+      set raw_status [writeRequest $REQUESTS(setManualMode) ""]
+    }
+    "startBoost" {
+      set raw_status [writeRequest $REQUESTS(startBoost) ""]
+    }
+    "stopBoost" {
+      set raw_status [writeRequest $REQUESTS(stopBoost) ""]
+    }
+  }
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded after mode request in time ($timeout sec.)"
+    exit -1
+  }
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc setTemperature {temp} {
+  global REQUESTS
+  global timeout
+
+  set raw_status ""
+  if {"comfort" == $temp} {
+    set raw_status [writeRequest $REQUESTS(setComfortTemperature) ""]
+  } elseif {"eco" == $temp} {
+    set raw_status [writeRequest $REQUESTS(setEcoTemperature) ""]
+  } elseif {"on" == $temp} {
+    set raw_status [writeRequest $REQUESTS(setOn) ""]
+  } elseif {"off" == $temp} {
+    set raw_status [writeRequest $REQUESTS(setOff) ""]
+  } else {
+    set raw_status [writeRequest $REQUESTS(setTemperature) "[tempToHex $temp]"]
+  }
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded after temperature request in time ($timeout sec.)"
+    exit -1
+  }
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc clear {} {
+  global REQUESTS
+
+  writeRequest $REQUESTS(clear) ""
+  puts "\nBuffer for last request cleared!"
+}
+
+proc reset {} {
+  global REQUESTS
+
+  writeRequest $REQUESTS(reset) ""
+  puts "\nFactory reset done!"
+}
+
+proc ascii {s i} {
+  return [scan [string index $s $i] %c]
+}
+
+proc parseSerial {} {
+  global REQUESTS
+  global thermostat
+  global timeout
+
+  set raw_serial [writeRequest $REQUESTS(serial) ""]
+
+  if {$raw_serial == ""} {
+    puts "ERROR: Thermostat hasn't responded in time ($timeout sec.)"
+    exit -1
+  }
+
+  set firmware [expr ([hexToDecimal [lindex $raw_serial 1]] / 100.0)]
+  set thermostat(firmware) $firmware
+
+  set serial ""
+  for {set i 4} {$i < 14} {incr i} {
+    set v [hexToDecimal [lindex $raw_serial $i]]
+    append serial "[format %c [expr $v - 48]]"
+  }
+  set thermostat(serial) $serial
+
+  set pin ""
+  append pin [expr ( [ascii $serial 3]       ^  [ascii $serial 7])       % 10]
+  append pin [expr ( [ascii $serial 4]       ^  [ascii $serial 8])       % 10]
+  append pin [expr ( [ascii $serial 5]       ^  [ascii $serial 9])       % 10]
+  append pin [expr (([ascii $serial 6] - 48) ^ ([ascii $serial 0] - 65)) % 10]
+  set thermostat(pin) $pin
+
+}
+
+proc printSerial {} {
+  global thermostat
+
+  parseSerial
+  puts "\nSerial no.:\t\t$thermostat(serial)"
+  puts "Firmware:\t\t$thermostat(firmware)"
+  puts "Pair:\t\t\t$thermostat(pin)"
+  puts ""
+}
+
+proc otherRequest {command} {
+  global REQUESTS
+  global timeout
+
+  set raw_status [writeRequest $REQUESTS($command) ""]
+
+  if {$raw_status == ""} {
+    puts "ERROR: Thermostat hasn't responded in time ($timeout sec.)"
+    exit -1
+  }
+
+  parseMode $raw_status
+  puts "\n[printStatus]"
+}
+
+proc doCommand {} {
+  global INIT
+  global cmd
+
+  log "doCommand: received command <$cmd>"
+
+  set c $cmd
+  set cmd ""
+
+  switch -regexp $c {
+    ^sync$ {
+      init $INIT(mode)
+    }
+    ^comforteco.* {
+      checkArgs $c 2 "comforteco" {^comforteco [0-9]{1,2}\.?[05]? [0-9]{1,2}\.?[05]?$}
+      init 0
+      setComfortEco [lindex $c 1] [lindex $c 2]
+    }
+    ^window.* {
+      checkArgs $c 2 "window" {^window [0-9]{1,2}\.?[05]? [01]:[0-5][05]$}
+      init 0
+      setWindowMode [lindex $c 1] [lindex $c 2]
+    }
+    ^offset.* {
+      checkArgs $c 1 "offset" {^offset -?[0-3]\.?[05]?$}
+      init 0
+      setOffset [lindex $c 1]
+    }
+    ^auto$ {
+      init 0
+      setMode "auto"
+    }
+    ^manual$ {
+      init 0
+      setMode "manual"
+    }
+    ^boost$ {
+      init 0
+      setMode "startBoost"
+    }
+    ^boost\ off$ {
+      init 0
+      setMode "stopBoost"
+    }
+    ^vacation.* {
+      if {[llength $c] == 4} {
+        checkArgs $c 3 "vacation" {^vacation [0-9]{2}-[01][0-9]-[0-3][0-9] [0-2][0-9]:[03][0] [0-9]{1,2}\.?[05]?$}
+        init 0
+        setVacationMode [lindex $c 1] [lindex $c 2] [lindex $c 3]
+      } else {
+        checkArgs $c 2 "vacation" {^vacation [0-9]{1,3} [0-9]{1,2}\.?[05]?$}
+        init 0
+        setAwayMode [lindex $c 1] [lindex $c 2]
+      }
+    }
+    ^timer-settings$ {
+      init $INIT(timer)
+      puts [dumpTimers]
+    }
+    ^timers$ {
+      init $INIT(timer)
+      puts [printTimers]
+    }
+    ^timer.* {
+      set params [lindex $c 1]
+      if {[llength $c] > 16} {
+        checkArgs $c 1 "timer" {^$}
+      } elseif {[llength $c] == 2} {
+        checkArgs $c 1 "timer" {^timer (mon|tue|wed|thu|fri|sat|sun|work|weekend|everyday|today|tomorrow)$}
+        init 0
+        getTimer $params
+      } else {
+        checkArgs $c 3 "timer" {^timer (mon|tue|wed|thu|fri|sat|sun|work|weekend|everyday|today|tomorrow) [0-9]{1,2}\.?[05]? [0-2][0-9]:[0-5][0].*$}
+        init 0
+        for {set i 2} {$i < [llength $c]} {set i [expr $i + 2]} {
+          set t "[lindex $c $i] [lindex $c [expr $i + 1]]"
+          checkArgs $t 1 "timer" {^[0-9]{1,2}\.?[05]? [0-2][0-9]:[0-5][0]$}
+          append params " $t"
+        }
+        setTimer $params
+      }
+    }
+    ^on$ {
+      init 0
+      setTemperature "on"
+    }
+    ^off$ {
+      init 0
+      setTemperature "off"
+    }
+    ^comfort$ {
+      init 0
+      setTemperature "comfort"
+    }
+    ^eco$ {
+      init 0
+      setTemperature "eco"
+    }
+    ^temp.* {
+      checkArgs $c 1 "temperature" {^temp [0-9]{1,2}\.?[05]?$}
+      init 0
+      setTemperature [lindex $c 1]
+    }
+    ^json$ {
+      toJson
+    }
+    ^status$ {
+      init [expr $INIT(device) + $INIT(mode) + $INIT(timer) + $INIT(serial)]
+      dumpThermostat
+    }
+    ^lock$ {
+      init 0
+      otherRequest "lock"
+    }
+    ^unlock$ {
+      init 0
+      otherRequest "unlock"
+    }
+    ^serial$ {
+      init $INIT(serial)
+      printSerial
+    }
+    ^clear$ {
+      init 0
+      clear
+    }
+    ^reset$ {
+      init 0
+      reset
+    }
+    ^.*$ {
+      help
+    }
+  }
+}
+
+parseArgv $argv
+if { $hci != "" } {
+  spawn -noecho /usr/bin/gatttool -I -i $hci
+} else {
+  spawn -noecho /usr/bin/gatttool -I
+}
+doCommand
+disconnect
+close -i $spawn_id

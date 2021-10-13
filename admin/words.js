@@ -32,17 +32,17 @@ systemDictionary = {
         "- Das eq3Controller.py-Script<br><br>"+
         "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)"
     },
-    "lab_eq3Controller_url_short": {
-        "en": "URL to eq3.php",
-        "de": "URL zu eq3.php"
+    "lab_eq3Controller_path_short": {
+        "en": "Path to eq3Controller.py",
+        "de": "Pfad zu eq3Controller.py"
     },
-    "lab_eq3Controller_url_long": {
-        "en": "e.g. http://192.168.1.100/eq/php/eq3.php",
-        "de": "z.B. http://192.168.1.100/eq/php/eq3.php"
+    "lab_eq3Controller_path_long": {
+        "en": "<a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  e.g. python3 /home/pi/eq3Controller.py",
+        "de": "<a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/tree/master/python-script\" target=\"_blank\">eq3Controller.py</a>   |  z.B. python3 /home/pi/eq3Controller.py"
     },
-    "btn_checkURL": {
-        "en": "Check URL",
-        "de": "URL testen",
+    "btn_checkPath": {
+        "en": "Check Path",
+        "de": "Pfad testen",
     },
     "lab_refresh_interval_short": {
         "en": "Refresh interval",
@@ -66,7 +66,11 @@ systemDictionary = {
     },
     "text_devices": {
         "en": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
-        "de": "Hier fügst du deine eq3-Geräte hinzu, die du steuern möchtest. <br> 1. eq3-Gerät starten. Immer nur eines, da der Bluetooth Name bei allen Geräten gleich ist. (CC-RT-BLE) <br> 2. Führe das Kommando \"sudo hcitool lescan\" auf der Konsole aus. <br> 3. Mit der + Knopf eine neue Zeile einfügen und die MAC-Adresse setzen.",
+        "de": "Hier fügst du \r deine eq3-Geräte hinzu, die du steuern möchtest. <br> 1. eq3-Gerät starten. Immer nur eines, da der Bluetooth Name bei allen Geräten gleich ist. (CC-RT-BLE) <br> 2. Führe das Kommando \"sudo hcitool lescan\" auf der Konsole aus. <br> 3. Mit der + Knopf eine neue Zeile einfügen und die MAC-Adresse setzen.",
+    },
+    "text_devices_loading": {
+        "en": "Loading, please wait for 10 seconds... <br> Found Devices will be displayed here one finished!",
+        "de": "Suche nach Geräten, bitte 10 Sekunden warten... <br> Gefundene Geräte erscheinen hier sobald die Suche abgeschlossen ist!",
     },
     "lab_BtnAddManual": {
         "en": "Manual",
