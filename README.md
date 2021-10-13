@@ -18,13 +18,14 @@
 Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
 
 Mit diesem Adapter ist es möglich Informationen aus den Thermostaten auszulesen und die Soll-Temperatur zu setzen.
-Voraussetzung ist Python und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funtkion (BTLE).
+Voraussetzung ist das Programm Expect und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funktion (BTLE).
 
 ## Features
 - Soll Temperatur eines Thermostats kann über "states" gesetzte werden
 - Gesetzte Temperatur wird erst per Bluetooth an Thermostat übermittelt, nachdem der Wert 8 Sekunden nicht verändert wurde
 - Wird am Thermostat selbst die Temperatur verändert wird dies über eine zyklische Ausleseroutine ausgelesen und die states gesetzt
 - Einstellbarer Aktualisierungsintervall
+- Erzwungener Manuell-Modus
 - Folgende Eigenschaften werden ausgelesen
   - Soll Temperatur (temperature)
   - Ventilstellung (valve)
@@ -33,10 +34,10 @@ Voraussetzung ist Python und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Fu
 
 <b>! WICHTIG !</b>
 
-Die Thermostate werden in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann.
+Ist die Option "Manuellen Modus erzwingen" werden die Thermostate in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann. Ist die Option in den Adapter-Einstellungen deaktiviert wird der Modus nicht geändert.
 
 
-Am Thermostat kann weiterhin die gewünschtt Temperatur Manuell eingestellt werden, bei der Aktualisierung wird der Wert in den IOBroker "states" übernommen.
+Am Thermostat kann weiterhin die gewünschtt Temperatur manuell eingestellt werden, bei der Aktualisierung wird der Wert in den IOBroker "states" übernommen.
 Minimal einstellbare Temperatur 5°C (aus), Maximal einstellbare Temperatur 30°C 
 
 
