@@ -36,7 +36,7 @@ systemDictionary = {
         "de": "Pfad zu eq3.exp"
     },
     "lab_eq3Controller_path_long": {
-        "en": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "en": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
         "de": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  z.B. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp"
     },
     "btn_checkPath": {
