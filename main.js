@@ -55,12 +55,15 @@ class Eq3Thermostat extends utils.Adapter {
         if (isNaN(this.config.inp_refresh_interval)) {
             this.config.inp_refresh_interval = 5;
             this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
-            //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         }
         if (!parseFloat(this.config.inp_button_step_size)) {
             this.config.inp_button_step_size = 1.0;
             this.log.info("Button step overwritten to: " + this.config.inp_button_step_size);
         }
+        this.log.info("Force Mode-Manual: " + this.config.inp_override_modemanual);
+
+ 
+        //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         if (this.config.inp_eq3Controller_path.length == 0) {
             this.log.info("## Python-Path emtpy, only Path-Check available");
             bPreCheckErr = true;

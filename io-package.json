@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "eq3-thermostat",
-        "version": "0.0.2",
+        "version": "2.0.0",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -72,8 +72,9 @@
     },
     "native": {
         "getEQ3Devices": [],
-        "inp_eq3Controller_path": "python3 /home/pi/eq3Controller.py",
-        "inp_refresh_interval": 5
+        "inp_eq3Controller_path": "expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "inp_refresh_interval": 5,
+        "inp_override_modemanual": 5
     },
     "objects": [],
     "instanceObjects": []

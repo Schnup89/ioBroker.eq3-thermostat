@@ -64,10 +64,6 @@ systemDictionary = {
         "en": "Always manual mode",
         "de": "Manuellen Modus erzwingen",
     },
-    "lab_override_modemanual_long": {
-        "en": "Test",
-        "de": "Test",
-    },
     "lab_devices": {
         "en": "Devicelist",
         "de": "Geräteliste",
