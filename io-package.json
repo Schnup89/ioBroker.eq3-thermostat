@@ -14,6 +14,18 @@
                 "es": "Versión inicial",
                 "pl": "Pierwsze wydanie",
                 "zh-cn": "首次出版"
+            },
+            "0.0.2": {
+                "en": "Switched from PYthon to Expect, Better Error-Handling",
+                "de": "Switched from PYthon to Expect, Better Error-Handling",
+                "ru": "Switched from PYthon to Expect, Better Error-Handling",
+                "pt": "Switched from PYthon to Expect, Better Error-Handling",
+                "nl": "Switched from PYthon to Expect, Better Error-Handling",
+                "fr": "Switched from PYthon to Expect, Better Error-Handling",
+                "it": "Switched from PYthon to Expect, Better Error-Handling",
+                "es": "Switched from PYthon to Expect, Better Error-Handling",
+                "pl": "Switched from PYthon to Expect, Better Error-Handling",
+                "zh-cn": "首次出版"
             }
         },
         "title": "eq3-Thermostat",
@@ -66,7 +78,7 @@
         "materialize": true,
         "dependencies": [
             {
-                "js-controller": ">=1.4.2"
+                "js-controller": ">=2.0.0"
             }
         ]
     },
