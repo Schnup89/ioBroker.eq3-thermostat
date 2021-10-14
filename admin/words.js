@@ -37,7 +37,7 @@ systemDictionary = {
         "- Getestestet wurde auf einem RPI 3B+, andere Systeme sollten mit Bluetooth auch funktionieren<br>"+
         "- Expect - Installieren per <i>sudo apt-get install expect</i><br>"+
         "- Das eq3.exp-Script<br><br>"+
-        "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)"
+        "Für eine genaue Anleitung und Troubleshooting-Tipps gehe auf die Github-Webseite dieses Adapters, (? oben rechts, oder <a href=\"https://github.com/Schnup89/ioBroker.eq3-Thermostat/\" target=\"_blank\">HIER</a>)",
         "ru": "Этот адаптер позволяет управлять термостатом eq3 bluetooth, дополнительную информацию см. На странице github.",
         "pt": "Este adaptador permite que você controle o termostato bluetooth eq3, veja a página do github para mais informações",
         "nl": "Met deze adapter kun je de eq3 bluetooth thermostaat bedienen, zie de github pagina voor meer informatie",
