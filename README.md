@@ -20,6 +20,16 @@ Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
 Mit diesem Adapter ist es möglich Informationen aus den Thermostaten auszulesen und die Soll-Temperatur zu setzen.
 Voraussetzung ist das Programm Expect und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funktion (BTLE).
 
+## Installation
+
+- Im ioBroker Webinterface unter "Adapter" oben mit dem "Kopf" Symbol die erweiterte Ansicht einschalten
+- Auf das Github-Symbol klicken, dieses erscheint in der oberen Leiste über den Adapter
+- "Benutzerdefiniert" auswählen und bei der URL folgende URL eingeben und "INSTALLIEREN" klicken
+```bash
+https://github.com/Schnup89/ioBroker.eq3-thermostat
+```
+
+
 ## Features
 - Soll Temperatur eines Thermostats kann über "states" gesetzte werden
 - Gesetzte Temperatur wird erst per Bluetooth an Thermostat übermittelt, nachdem der Wert 8 Sekunden nicht verändert wurde
@@ -74,7 +84,7 @@ Sobald die Adapterkonfiguration gespeichert wird, sollten nach einer kurzen Wart
 eq3-thermostat.0.MAC-Adresse
 ``` 
 
-### (Optional) Expect-Script prüfen
+## (Optional) Expect-Script prüfen
 
 1. Verbinde dich per SSH oder Lokal auf die Konsole (bash) deines IOBroker Systems
 
@@ -187,6 +197,9 @@ Font Size: 24
 
 
 ## Changelog
+
+### 2.0.1
+* (Schnup89) New Version with better error-handling and communication with expect script instead of python
 
 ### 0.0.2
 * (Schnup89) First Test & Documentation
