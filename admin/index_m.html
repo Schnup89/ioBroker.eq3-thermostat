@@ -38,11 +38,13 @@
                     document.getElementById("devText_loading").hidden=false;
                     sendTo(null, 'findDevices', { EQ3Path: true }, function (response) {
                         if (response !== "error") {
-                            document.getElementById("devText_loading").hidden=false;
+                            document.getElementById("devText_loading").hidden=true;
                             document.getElementById("devText_found").innerHTML=response;
+                            document.getElementById("devText_found").hidden=false;
                         }else{
-                            document.getElementById("devText_loading").hidden=false;
+                            document.getElementById("devText_loading").hidden=true;
                             document.getElementById("devText_found").innerHTML="Error";
+                            document.getElementById("devText_found").hidden=false;
                         }
                     });
                 }));
