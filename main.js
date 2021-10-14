@@ -7,6 +7,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
+const { execSync } = require("child_process");
 
 let exec;
 let tmr_EQ3Update = null;
@@ -34,31 +35,35 @@ class Eq3Thermostat extends utils.Adapter {
     async onReady() {
         // Initialize your adapter here
         let bPreCheckErr = false;   //We can't stop the adapter since we need it 4 path check. Make preCheck, if error found don't run main functions
-        const version = process.version;
+        
+        /*const version = process.version;
         const va = version.split(".");
         if (va[0] === "v0" && va[1] === "10") {
             this.log.info("NODE Version = " + version + ", we need new exec-sync");
             // @ts-ignore
-            exec = require("sync-exec");
+            const execSync     = require("sync-exec");
         } else {
             this.log.info("NODE Version = " + version + ", we need new execSync");
-            exec = require("child_process").execSync;
-        }
+            const execSync     = require("child_process").execSync;
+        }*/
 
         this.log.info("##### LOAD CONFIG ##### ");
         if (!this.config.getEQ3Devices.length) {
             this.log.info("## No Devices created, only Path-Check available");
             bPreCheckErr = true;
         }
-        if (!Number.isInteger(this.config.inp_refresh_interval)) {
+        if (isNaN(this.config.inp_refresh_interval)) {
             this.config.inp_refresh_interval = 5;
             this.log.info("Update-Interval overwritten to: " + this.config.inp_refresh_interval);
-            //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         }
         if (!parseFloat(this.config.inp_button_step_size)) {
             this.config.inp_button_step_size = 1.0;
             this.log.info("Button step overwritten to: " + this.config.inp_button_step_size);
         }
+        this.log.info("Force Mode-Manual: " + this.config.inp_override_modemanual);
+
+ 
+        //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         if (this.config.inp_eq3Controller_path.length == 0) {
             this.log.info("## Python-Path emtpy, only Path-Check available");
             bPreCheckErr = true;
@@ -78,6 +83,8 @@ class Eq3Thermostat extends utils.Adapter {
                 await this.setObjectNotExists(sDevMAC+".temperature", { type: "state", common: { name: "temperature", role: "level.temperature", write: true, type: "number", unit: "°C", min: 5, max: 30 }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".valve", { type: "state", common: { name: "valve", role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".low_battery_alarm", { type: "state", common: { name: "low_battery_alarm", role: "indicator", write: false, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".no_connection", { type: "state", common: { name: "no_connection", role: "indicator", write: false, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".last_cmd_failed", { type: "state", common: { name: "last_cmd_failed", role: "indicator", write: false, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".name", { type: "state", common: { name: "name", role: "text", write: false, type: "string" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".plus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".minus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
@@ -157,7 +164,9 @@ class Eq3Thermostat extends utils.Adapter {
                     state.val = state.val - updateStep;
                 }
             }
-        } else { /* The state was deleted */ }
+        } else {
+            // The state was deleted
+        }
     }
 
     // /**
@@ -174,29 +183,45 @@ class Eq3Thermostat extends utils.Adapter {
                 //TT, send Result back
                 if (obj.callback) this.sendTo(obj.from, obj.command, bCMDRes.toString(), obj.callback);
             }
+            if (obj.command === "findDevices") {
+                //TT, save Command Result true/false
+                try {
+                        var stdout = execSync("timeout -s INT 8s stdbuf -oL hcitool lescan").toString().replace(new RegExp('\r?\n','g'), '<br>');
+                }catch (e) {
+                        var stdout = "Error: " + e.stdout.toString().replace(new RegExp('\r?\n','g'), '<br>');
+                }
+                var aMacFound = stdout.split('<br>');
+                var sOut = "";
+                for (const val of aMacFound) { // You can use `let` instead of `const` if you like
+                    if (val.indexOf("CC-RT-BLE") > -1) {
+                        sOut = sOut + val + "<br>";
+                    }
+                }
+                //TT, send Result back   sudo timeout 10s sudo hcitool lescan | grep CC-RT-BLE
+                if (obj.callback) this.sendTo(obj.from, obj.command, sOut.toString(), obj.callback);
+            }
         }
     }
 
     fCheckLiveEQ3Controller(sPath) {
         try {
-            const sCommand = sPath + " check";
-            const sCmdRes = exec(sCommand).toString().trim();
-            this.log.info("Result from Command \"" + sCommand + "\": " + sCmdRes);
-            if (sCmdRes === "eq3OK") {
+        const stdout = execSync(sPath + " help").toString();  //print exp script help
+        this.log.debug("PathCheck-Result: " + stdout);
+            if (stdout.indexOf("Full-featured CLI for radiator thermostat eQ-3 CC-RT-BLE") > -1) {  //Script found :)
                 this.log.info("check successful!");
                 return true;
-            } else {
-                this.log.info("check Failed! Responese doesn't match eq3OK");
-                this.log.info("check Failed! Responese: " + sCmdRes);
-                return false;
+            }else{
+                this.log.info("check Failed! Response doesn't match expected output");  //Expected Connection Failed
+                this.log.info("check Failed! Response: " + sCmdRes);
+            return false;
             }
-        } catch (e) {
-            this.log.info("check Failed! Responese doesn't match eq3OK");
-            this.log.info("check Failed! Responese: " + e);
+        }catch (e) {
+            this.log.info("check Failed! Response doesn't match expected output");
+            this.log.info("check Failed! Response: " + e);
             return false;
         }
+        return false;
     }
-    //sudo timeout 10s sudo hcitool lescan | grep CC-RT-BLE
 
     fEQ3Update() {
         if (this.config.getEQ3Devices.length) {
@@ -210,17 +235,47 @@ class Eq3Thermostat extends utils.Adapter {
                 // @ts-ignore
                 const sDevName = this.config.getEQ3Devices[nDev].eq3Name;
                 const sPath = this.config.inp_eq3Controller_path;
-                const sCommand = sPath + " getValue " + sDevMAC;
                 try {
-                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm
-                    const aCmdRes = exec(sCommand).toString().trim().split(";");
-                    this.fUpdateDevObj(aCmdRes, sDevMAC, sDevName);
-                } catch (e) {
-                    this.log.error("Command \"" + sCommand + "\" failed!");
+                    try {
+                        var stdout = execSync(sPath + " " + sDevMAC + " json").toString();
+                    } catch (e) {
+                        if (e.stdout.indexOf("Connection failed") >= 0) {
+                            this.log.error("Connection Error for MAC: " + sDevMAC);
+                            this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
+                            continue;
+                        }
+                    }
+                    try {
+                        JSON.parse(stdout);
+                    } catch (e) {
+                        this.log.error("No valid JSON for MAC: " + sDevMAC);
+                        this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
+                        continue;
+                    }
+                    const jRes = JSON.parse(stdout);
+                    if (jRes.hasOwnProperty('error')) {
+                        this.log.error("Connection Error for MAC: " + sDevMAC);
+                        this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
+                        continue;
+                    }
+                    //If Force Mode Manual is set
+                    if (this.config.inp_override_modemanual){
+                        if (!jRes['mode']['manual']) {   //If Mode is not manual
+                            //Set manual mode ! Dont check result, it's not critical, we have no time in this for-loop
+                            this.log.info("Wrong Mode detected, changing to Manual-Mode for Device: \"" + sDevMAC + "\" ");
+                            execSync(sPath + " " + sDevMAC + " manual");
+                        }
+                    }
+                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection
+                    const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false];
+                    this.fUpdateDevObj(aValues, sDevMAC, sDevName);
+                }catch (e) {
+                    this.log.error("Could not get Values for Device: \"" + sDevMAC + "\" ");
                     this.log.error("-----------\"" + e);
+                    this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
                 }
             }
-        } else {
+        }else{
             //No Devices No Timer
             clearInterval(tmr_EQ3Update);
             tmr_EQ3Update = null;
@@ -228,25 +283,34 @@ class Eq3Thermostat extends utils.Adapter {
     }
 
     fUpdateDevObj(aDevValues, sDevMAC, sDevName) {
-        let temperature = parseInt(aDevValues[0])
-        let valve = parseInt(aDevValues[1])
-        let low_battery_alarm = (aDevValues[2].toLowerCase() === 'true')
-        this.setStateAsync(sDevMAC+".temperature", { val: temperature, ack: true });
-        this.setStateAsync(sDevMAC+".valve", { val: valve, ack: true });
-        this.setStateAsync(sDevMAC+".low_battery_alarm", { val: low_battery_alarm, ack: true });
+        //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection
+        this.setStateAsync(sDevMAC+".temperature", { val: aDevValues[0], ack: true });
+        this.setStateAsync(sDevMAC+".valve", { val: aDevValues[1], ack: true });
+        this.setStateAsync(sDevMAC+".low_battery_alarm", { val: aDevValues[2], ack: true });
+        this.setStateAsync(sDevMAC+".no_connection", { val: aDevValues[3], ack: true });
         this.setStateAsync(sDevMAC+".name", { val: sDevName, ack: true });
     }
 
     fSetTemp(sDevMAC, sTemp) {
         this.log.info("Set " + sTemp + "°C on Device  "+sDevMAC);
         const sPath = this.config.inp_eq3Controller_path;
-        const sCommand = sPath + " setValue " + sDevMAC + " " + sTemp;
-        try {
-            const sCmdRes = exec(sCommand).toString();
-            this.log.info("Command result: " + sCmdRes);
-        } catch (e) {
-            this.log.error("Command \"" + sCommand + "\" failed!");
-            this.log.error("-----------\"" + e);
+        var retries = 3;
+        var success = false;
+        for (var i = 0; i < retries; i++) {
+            try {
+                const stdout = execSync(sPath + " " + sDevMAC + " temp " + sTemp);
+                this.log.info("Command result: " + stdout);
+                success = true;
+                break;
+            }catch (e) {
+                this.log.error("Command failed for MAC: " + sDevMAC);
+                this.log.error("-----------" + e);
+            }
+        }
+        if (success) {
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
+        }else{
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
         }
     }
 }

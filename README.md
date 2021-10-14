@@ -18,13 +18,17 @@
 Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
 
 Mit diesem Adapter ist es möglich Informationen aus den Thermostaten auszulesen und die Soll-Temperatur zu setzen.
-Voraussetzung ist Python und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funtkion (BTLE).
+Voraussetzung ist das Programm Expect und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funktion (BTLE).
 
 ## Features
 - Soll Temperatur eines Thermostats kann über "states" gesetzte werden
 - Gesetzte Temperatur wird erst per Bluetooth an Thermostat übermittelt, nachdem der Wert 8 Sekunden nicht verändert wurde
 - Wird am Thermostat selbst die Temperatur verändert wird dies über eine zyklische Ausleseroutine ausgelesen und die states gesetzt
 - Einstellbarer Aktualisierungsintervall
+- Erzwungener Manuell-Modus
+- Bluetooth-Scan im Admin-Panel
+- Verbindungsprobleme werden als state reported
+- Verbindungsversuch wird nach ca. 10 Sekunden abgebrochen
 - Folgende Eigenschaften werden ausgelesen
   - Soll Temperatur (temperature)
   - Ventilstellung (valve)
@@ -33,59 +37,76 @@ Voraussetzung ist Python und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Fu
 
 <b>! WICHTIG !</b>
 
-Die Thermostate werden in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann.
+Ist die Option "Manuellen Modus erzwingen" werden die Thermostate in den Modus "Manuell" versetzt, sodass die Automatik am Thermostat nicht mehr genutzt werden kann. Ist die Option in den Adapter-Einstellungen deaktiviert wird der Modus nicht geändert.
 
 
-Am Thermostat kann weiterhin die gewünschtt Temperatur Manuell eingestellt werden, bei der Aktualisierung wird der Wert in den IOBroker "states" übernommen.
+Am Thermostat kann weiterhin die gewünschtt Temperatur manuell eingestellt werden, bei der Aktualisierung wird der Wert in den IOBroker "states" übernommen.
 Minimal einstellbare Temperatur 5°C (aus), Maximal einstellbare Temperatur 30°C 
 
 
 ## Vorbereitung und Überprüfung der Umgebung
 
-Für diesen Adapter wird eine Python-Library genutzt welche installiert und getestet sein sollte.
+Für diesen Adapter wird das Expect-Script von Heckie75 genutzt. Die Pfade sind im Adapter vorgegeben, können aber angepasst werden. Ist Expect schon installiert, sollte der Adapter direkt nutzbar sein.
+Für den Bluetooth-Scan über die Adapterseite (BT Scan) muss vorher per SSH folgende Berechtigung gesetzt werden: 
+```bash
+sudo setcap cap_net_raw+ep /usr/bin/hcitool
+``` 
+Evtl muss der Pfad des hcitool angepasst werden, dieser wird euch angezeigt mit dem Befehl:
+```bash
+which hcitool
+``` 
 
 
-### Schritt-für-Schritt Anleitung:
+## Adapterkonfiguration + Erster Start
+
+Im Adapter kann nun das Script getestet werden. Hier wird der volle Pfad (incl. expect kommando) zu der ed3.exp erwartet. Bei mir ist dies expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp
+Wenn ihr einen anderen Pfad möchtet, besorgt euch die Datei bei Heckie75 und passt den Pfad entsprechend an.
+Der Button "PFAD TESTEN" muss Grün werden, sonst tut der Adapter nichts.
+
+
+Den Aktualisierungsintervall würde ich auf 3-5 Minuten einstellen. Je länger der Intervall desto länger halten die Batterien des eq3-Thermostats.
+
+Trage in der Liste unten mit dem "+" die MAC-Adresse und den Raum jedes Gerätes ein.
+
+Sobald die Adapterkonfiguration gespeichert wird, sollten nach einer kurzen Wartezeit die Devices unter den Objekten angelegt werden.
+
+```bash
+eq3-thermostat.0.MAC-Adresse
+``` 
+
+### (Optional) Expect-Script prüfen
 
 1. Verbinde dich per SSH oder Lokal auf die Konsole (bash) deines IOBroker Systems
 
-2. Installieren der Python-Library "python-eq3bt"
+2. Prüfe ob expect installiert ist
 ```bash
-pip install python-eq3bt
-```
-oder für Python3
-```bash
-pip3 install python-eq3bt
-```
-! Evtl. ein "sudo" voranstellen
-! Sollte der Konsolentest erfolgrich sein, und in ioBroker ein Fehler mit "import module eq3bt" kommt, bitte folgendes Kommando ausführen:
-```bash
-sudo -H -u iobroker pip3 install python-eq3bt
+$ sudo apt install expect
 ```
 
-2. Testen der Python-Library
-
-Kopiere die Datei "eq3Controller.py" aus dem Repository-Ordner "python-script" oder erstelle Sie mit einem Text-Editor deiner Wahl.
-
-Nun das Script noch für alle System-User ausführbar machen:  
+3. Prüfe ob Geräte gefunden werden (CC-RT-BLE)
 ```bash
-sudo chmod +x eq3Controller.py
+$ sudo hcitool lescan
+LE Scan ...
+38:01:95:84:A8:B1 (unknown)
+00:1A:22:0A:91:CF (unknown)
+00:1A:22:0A:91:CF CC-RT-BLE
+```
+Bitte beachtet dass der Scan evtl. im Hintergrund ewig läuft.
+Sollte die Kommunikation gar nicht mehr funktionieren, bitte Bluetooth wie folgt neu starten:
+```bash
+$ sudo /etc/init.d/bluetooth restart
 ```
 
-Sollte die Library richtig installiert und eingebunden sein, sollte folgendes Kommando die Befehle ausgeben:
+## (Optional) Bluetooth MAC-Adresse auslesen
+
 ```bash
-python eq3Controller.py
+$ sudo hcitool lescan
+LE Scan ...
+38:01:95:84:A8:B1 (unknown)
+00:1A:22:0A:91:CF (unknown)
+00:1A:22:0A:91:CF CC-RT-BLE
 ```
-oder mit Python3
-```bash
-python3 eq3Controller.py
-```
-Ist dies erfolgreich, so notiere dir den Pfad zu dieser Datei. Der aktuelle Pfad mit dem Kommando "pwd" in der Konsole ausgegeben.
-
-
-## Bluetooth MAC-Adresse auslesen
-
-Um später die EQ3-Thermostate ansprechen zu können beötigt der Adapter die MAC-Adresse und den Raum um die Thermostate zuordnen zu können.
+Siehe Hinweis oben bzgl. Bluetooth Scan.
 
 Der Bluetooth-Name ist bei jeden Gerät geleich, sodass hier am besten ein Gerät nach dem anderen eingelesen werden sollte.
 
@@ -100,20 +121,6 @@ sudo hcitool lescan
 
 Für jedes Gerät Schritt 1. bis 3. wiederholen.
 
-
-## Adapterkonfiguration + Erster Start
-
-Im Adapter kann nun der Pfad wie oben bei der Vorberitung notiert eingetragen werden.
-
-Den Aktualisierungsintervall würde ich auf 2-5 Minuten einstellen. je länger der Intervall desto länger halten die Batterien des eq3-Thermostats.
-
-Trage in der Liste unten mit dem "+" die MAC-Adresse und den Raum jedes Gerätes ein.
-
-Sobald die Adapterkonfiguration gespeichert wird, sollten nach einer kurzen Wartezeit die Devices unter den Objekten angelegt werden.
-
-```bash
-eq3-thermostat.0.MAC-Adresse
-``` 
 
 
 ## (Optional) Habpanel-Steuerung

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "eq3-thermostat",
-        "version": "0.0.2",
+        "version": "2.0.1",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -13,6 +13,18 @@
                 "it": "Versione iniziale",
                 "es": "Versión inicial",
                 "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            },
+            "0.0.2": {
+                "en": "Switched from PYthon to Expect, Better Error-Handling",
+                "de": "Switched from PYthon to Expect, Better Error-Handling",
+                "ru": "Switched from PYthon to Expect, Better Error-Handling",
+                "pt": "Switched from PYthon to Expect, Better Error-Handling",
+                "nl": "Switched from PYthon to Expect, Better Error-Handling",
+                "fr": "Switched from PYthon to Expect, Better Error-Handling",
+                "it": "Switched from PYthon to Expect, Better Error-Handling",
+                "es": "Switched from PYthon to Expect, Better Error-Handling",
+                "pl": "Switched from PYthon to Expect, Better Error-Handling",
                 "zh-cn": "首次出版"
             }
         },
@@ -66,14 +78,15 @@
         "materialize": true,
         "dependencies": [
             {
-                "js-controller": ">=1.4.2"
+                "js-controller": ">=2.0.0"
             }
         ]
     },
     "native": {
         "getEQ3Devices": [],
-        "inp_eq3Controller_path": "python3 /home/pi/eq3Controller.py",
-        "inp_refresh_interval": 5
+        "inp_eq3Controller_path": "expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "inp_refresh_interval": 5,
+        "inp_override_modemanual": false
     },
     "objects": [],
     "instanceObjects": []
