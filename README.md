@@ -66,7 +66,7 @@ eq3-thermostat.-instanznummer-.-mac-adresse-
 | name | Read | Name der im Admin-Panel dem Gerät vergeben wurde |
 | no_connection | Read | Wenn zyklischen Auslesen beim letzten mal fehlgeschlagen ist |
 | temperature | Read & Write | Temperatur in °C wird bei Auslesezyklus ausgelesen, kann auch gesetzt werden |
-| valve | Ventilstellung in % |
+| valve | Read | Ventilstellung in % |
 
 
 
