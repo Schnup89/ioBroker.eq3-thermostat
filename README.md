@@ -61,12 +61,12 @@ eq3-thermostat.-instanznummer-.-mac-adresse-
 
 | State-Name | Read/Write | Beschreibung |
 | ------------- | ------------- |
-| last_cmd_failed  | Read  |  Wenn letzter Schreibvorgang (setzen der Temp) fehlgeschlagen ist = true
-| low_battery_alarm  | Read  | Bei true ist der Batterie Alarm ausgelöst
-| name | Read | Name der im Admin-Panel dem Gerät vergeben wurde
-| no_connection | Read | Wenn zyklischen Auslesen beim letzten mal fehlgeschlagen ist
-| temperature | Read & Write | Temperatur in °C wird bei Auslesezyklus ausgelesen, kann auch gesetzt werden
-| valve | Ventilstellung in %
+| last_cmd_failed  | Read  |  Wenn letzter Schreibvorgang (setzen der Temp) fehlgeschlagen ist = true |
+| low_battery_alarm  | Read  | Bei true ist der Batterie Alarm ausgelöst |
+| name | Read | Name der im Admin-Panel dem Gerät vergeben wurde |
+| no_connection | Read | Wenn zyklischen Auslesen beim letzten mal fehlgeschlagen ist |
+| temperature | Read & Write | Temperatur in °C wird bei Auslesezyklus ausgelesen, kann auch gesetzt werden |
+| valve | Ventilstellung in % |
 
 
 
