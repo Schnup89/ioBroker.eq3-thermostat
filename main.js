@@ -252,7 +252,7 @@ class Eq3Thermostat extends utils.Adapter {
                         var stdout = execSync(sPath + " " + sDevMAC + " json").toString();
                     } catch (e) {
                         if (e.stdout.indexOf("Connection failed") >= 0) {
-                            this.log.error("Connection Error for MAC: " + sDevMAC);
+                            this.log.error("Connection Failed for MAC: " + sDevMAC);
                             this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
                             continue;
                         }

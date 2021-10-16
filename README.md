@@ -218,6 +218,9 @@ Font Size: 24
 
 ## Changelog
 
+### 2.0.4
+* (Schnup89) Seperated "Connection Error" to "Connection Error" & "Connection Failed"
+
 ### 2.0.3
 * (Schnup89) Expect Output as debugging log
 
