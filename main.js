@@ -223,6 +223,14 @@ class Eq3Thermostat extends utils.Adapter {
         return false;
     }
 
+    sleep(milliseconds) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+            currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+    }
+
     fEQ3Update() {
         if (this.config.getEQ3Devices.length) {
             //Set Timer for next Update
@@ -235,6 +243,10 @@ class Eq3Thermostat extends utils.Adapter {
                 // @ts-ignore
                 const sDevName = this.config.getEQ3Devices[nDev].eq3Name;
                 const sPath = this.config.inp_eq3Controller_path;
+                if (nDev > 0) {
+                    this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+                }
+
                 try {
                     try {
                         var stdout = execSync(sPath + " " + sDevMAC + " json").toString();
@@ -306,6 +318,7 @@ class Eq3Thermostat extends utils.Adapter {
                 this.log.error("Command failed for MAC: " + sDevMAC);
                 this.log.error("-----------" + e);
             }
+            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
         }
         if (success) {
                 this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });

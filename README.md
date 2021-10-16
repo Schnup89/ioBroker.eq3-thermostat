@@ -197,6 +197,9 @@ Font Size: 24
 
 ## Changelog
 
+### 2.0.2
+* (Schnup89) Add 1 second delay between BT-Calls
+
 ### 2.0.1
 * (Schnup89) New Version with better error-handling and communication with expect script instead of python
 
