@@ -261,6 +261,8 @@ class Eq3Thermostat extends utils.Adapter {
                         JSON.parse(stdout);
                     } catch (e) {
                         this.log.error("No valid JSON for MAC: " + sDevMAC);
+                        this.log.debug("error Message: " + e);
+                        this.log.debug("Expect-Output: " + stdout);
                         this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
                         continue;
                     }

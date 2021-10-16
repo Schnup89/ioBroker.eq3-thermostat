@@ -201,6 +201,9 @@ Font Size: 24
 
 ## Changelog
 
+### 2.0.3
+* (Schnup89) Expect Output as debugging log
+
 ### 2.0.2
 * (Schnup89) Add 1 second delay between BT-Calls
 
