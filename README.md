@@ -65,6 +65,10 @@ Evtl muss der Pfad des hcitool angepasst werden, dieser wird euch angezeigt mit 
 which hcitool
 ``` 
 
+(Optional) Wenn der Scan trotzdem nicht funktioniert, hat folgende Service-Anpassung bei mir geholfen:  
+https://raspberrypi.stackexchange.com/questions/40839/sap-error-on-bluetooth-service-status
+
+
 
 ## Adapterkonfiguration + Erster Start
 
