@@ -85,6 +85,11 @@ which hcitool
 (Optional) Wenn der Scan trotzdem nicht funktioniert, hat folgende Service-Anpassung bei mir geholfen:  
 https://raspberrypi.stackexchange.com/questions/40839/sap-error-on-bluetooth-service-status
 
+(Optional) Bei Verbindungsproblemen bitte mit folgenden Kommando sspmode deaktivieren:
+```bash
+hciconfig hci0 sspmode disable
+```
+
 
 
 ## Adapterkonfiguration + Erster Start
