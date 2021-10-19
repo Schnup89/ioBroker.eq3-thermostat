@@ -71,7 +71,7 @@ class Eq3Thermostat extends utils.Adapter {
         this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
         this.log.info("Update-Interval: " + this.config.inp_refresh_interval);
         this.log.info("Button step: " + this.config.inp_button_step_size);
-        this.log.info("PY-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
+        this.log.info("Expect-Script Path:  \"" + this.config.inp_eq3Controller_path +"\" ");
 
         this.log.info("##### CREATE OBJECTS ##### ");
         if (this.config.getEQ3Devices.length) {
