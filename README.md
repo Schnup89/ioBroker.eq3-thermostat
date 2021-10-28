@@ -90,10 +90,10 @@ https://raspberrypi.stackexchange.com/questions/40839/sap-error-on-bluetooth-ser
 (Optional) Bei Verbindungsproblemen kann mit folgenden Kommando sspmode deaktiviert werden:
 ```bash
 hciconfig hci0 sspmode disable
-``` n 
+``` 
 
 Bei einer Installation konnten die Verbindung zu den Thermostaten nur bei einerm von zehn Verbindungsversuchen hergestellt werden.  
-Zum Test habe ich die Thermostate mit dem System "gepaired" und seitdem funktioniert die Verbindung stabil.  
+Zum Test habe ich die Thermostate mit dem System "gepaired", seitdem funktioniert die Verbindung stabil.  
 Die Pairing-Vorgehensweise ist hier beschrieben: https://github.com/Schnup89/ioBroker.eq3-thermostat/issues/31#issuecomment-953297110
   
   
