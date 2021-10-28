@@ -81,17 +81,22 @@ Evtl muss der Pfad des hcitool angepasst werden, dieser wird euch angezeigt mit 
 ```bash
 which hcitool
 ``` 
-
-(Optional) Wenn der Scan trotzdem nicht funktioniert, hat folgende Service-Anpassung bei mir geholfen:  
+Wenn der Scan trotzdem nicht funktioniert, hat folgende Service-Anpassung bei mir geholfen:  
 https://raspberrypi.stackexchange.com/questions/40839/sap-error-on-bluetooth-service-status
 
-(Optional) Bei Verbindungsproblemen bitte mit folgenden Kommando sspmode deaktivieren:
+
+## Troubleshooting Verbindungsprobleme/Stabilität
+
+(Optional) Bei Verbindungsproblemen kann mit folgenden Kommando sspmode deaktiviert werden:
 ```bash
 hciconfig hci0 sspmode disable
-```
+``` n 
 
-
-
+Bei einer Installation konnten die Verbindung zu den Thermostaten nur bei einerm von zehn Verbindungsversuchen hergestellt werden.  
+Zum Test habe ich die Thermostate mit dem System "gepaired" und seitdem funktioniert die Verbindung stabil.  
+Die Pairing-Vorgehensweise ist hier beschrieben: https://github.com/Schnup89/ioBroker.eq3-thermostat/issues/31#issuecomment-953297110
+  
+  
 ## Adapterkonfiguration + Erster Start
 
 Im Adapter kann nun das Script getestet werden. Hier wird der volle Pfad (incl. expect kommando) zu der ed3.exp erwartet. Bei mir ist dies expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp
