@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "eq3-thermostat",
-        "version": "2.0.4",
+        "version": "2.0.5",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -17,15 +17,75 @@
             },
             "0.0.2": {
                 "en": "Switched from PYthon to Expect, Better Error-Handling",
-                "de": "Switched from PYthon to Expect, Better Error-Handling",
-                "ru": "Switched from PYthon to Expect, Better Error-Handling",
-                "pt": "Switched from PYthon to Expect, Better Error-Handling",
-                "nl": "Switched from PYthon to Expect, Better Error-Handling",
-                "fr": "Switched from PYthon to Expect, Better Error-Handling",
-                "it": "Switched from PYthon to Expect, Better Error-Handling",
-                "es": "Switched from PYthon to Expect, Better Error-Handling",
-                "pl": "Switched from PYthon to Expect, Better Error-Handling",
-                "zh-cn": "首次出版"
+                "de": "Von PYthon auf Expect umgestellt, bessere Fehlerbehandlung",
+                "ru": "Перешел с PYthon на Expect, улучшенная обработка ошибок",
+                "pt": "Mudou de PYthon para Expect, Better Error-Handling",
+                "nl": "Overgeschakeld van PYthon naar Expect, betere foutafhandeling",
+                "fr": "Passé de PYthon à Expect, meilleure gestion des erreurs",
+                "it": "Passato da PYthon ad Expect, migliore gestione degli errori",
+                "es": "Se cambió de PYthon a esperar, mejor manejo de errores",
+                "pl": "Przejście z PYthona na Expect, lepszej obsługi błędów",
+                "zh-cn": "从 PYthon 切换到 Expect，更好的错误处理"
+            },
+            "2.0.1": {
+                "en": " New Version with better error-handling and communication with expect script instead of python",
+                "de": " Neue Version mit besserer Fehlerbehandlung und Kommunikation mit Expect-Skript statt Python",
+                "ru": " Новая версия с улучшенной обработкой ошибок и связью с ожиданием скрипта вместо python",
+                "pt": " Nova versão com melhor tratamento de erros e comunicação com script expect em vez de python",
+                "nl": " Nieuwe versie met betere foutafhandeling en communicatie met verwacht script in plaats van python",
+                "fr": " Nouvelle version avec une meilleure gestion des erreurs et une meilleure communication avec le script expect au lieu de python",
+                "it": " Nuova versione con una migliore gestione degli errori e comunicazione con lo script previsto invece di python",
+                "es": " Nueva versión con mejor manejo de errores y comunicación con un script de espera en lugar de Python",
+                "pl": " Nowa wersja z lepszą obsługą błędów i komunikacją ze skryptem oczekiwania zamiast pythona",
+                "zh-cn": " 新版本具有更好的错误处理和与期望脚本而不是 python 的通信"
+            },
+            "2.0.2": {
+                "en": "Add 1 second delay between BT-Calls",
+                "de": "Fügen Sie 1 Sekunde Verzögerung zwischen BT-Anrufen hinzu",
+                "ru": "Добавьте задержку в 1 секунду между звонками BT",
+                "pt": "Adicionar 1 segundo de atraso entre chamadas BT",
+                "nl": "Voeg 1 seconde vertraging toe tussen BT-oproepen",
+                "fr": "Ajouter 1 seconde de délai entre les appels BT",
+                "it": "Aggiungi 1 secondo di ritardo tra le chiamate BT",
+                "es": "Agregue 1 segundo de retraso entre BT-Calls",
+                "pl": "Dodaj 1-sekundowe opóźnienie między połączeniami BT",
+                "zh-cn": "在 BT-Calls 之间添加 1 秒延迟"
+            },
+            "2.0.3": {
+                "en": "Expect Output as debugging log",
+                "de": "Ausgabe als Debugging-Log erwarten",
+                "ru": "Ожидайте вывода в виде журнала отладки",
+                "pt": "Esperar saída como log de depuração",
+                "nl": "Verwacht uitvoer als foutopsporingslogboek",
+                "fr": "Attendre la sortie en tant que journal de débogage",
+                "it": "Aspettati l'output come log di debug",
+                "es": "Espere la salida como registro de depuración",
+                "pl": "Oczekuj wyjścia jako dziennik debugowania",
+                "zh-cn": "期望输出为调试日志"
+            },
+            "2.0.4": {
+                "en": "Seperated Connection Error to Connection Error & Connection Failed",
+                "de": "Getrennter Verbindungsfehler zu Verbindungsfehler und Verbindung fehlgeschlagen",
+                "ru": "Ошибка отдельного подключения к ошибке подключения и сбой подключения",
+                "pt": "Erro de conexão separado para erro de conexão e falha de conexão",
+                "nl": "Gescheiden verbindingsfout naar verbindingsfout en verbinding mislukt",
+                "fr": "Erreur de connexion séparée en erreur de connexion et échec de la connexion",
+                "it": "Errore di connessione separata per errore di connessione e connessione non riuscita",
+                "es": "Error de conexión separada a error de conexión y conexión fallida",
+                "pl": "Oddzielny błąd połączenia z błędem połączenia i niepowodzeniem połączenia",
+                "zh-cn": "连接错误和连接失败的分离连接错误"
+            },
+            "2.0.5": {
+                "en": "added boost switch",
+                "de": "Boost-Schalter hinzugefügt",
+                "ru": "добавлен переключатель ускорения",
+                "pt": "adicionado interruptor de impulso",
+                "nl": "boost-schakelaar toegevoegd",
+                "fr": "interrupteur de suralimentation ajouté",
+                "it": "interruttore boost aggiunto",
+                "es": "interruptor de impulso añadido",
+                "pl": "dodano przełącznik doładowania",
+                "zh-cn": "添加升压开关"
             }
         },
         "title": "eq3-Thermostat",

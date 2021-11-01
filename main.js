@@ -34,7 +34,7 @@ class Eq3Thermostat extends utils.Adapter {
     async onReady() {
         // Initialize your adapter here
         let bPreCheckErr = false;   //We can't stop the adapter since we need it 4 path check. Make preCheck, if error found don't run main functions
-        
+
         /*const version = process.version;
         const va = version.split(".");
         if (va[0] === "v0" && va[1] === "10") {
@@ -60,11 +60,10 @@ class Eq3Thermostat extends utils.Adapter {
             this.log.info("Button step overwritten to: " + this.config.inp_button_step_size);
         }
         this.log.info("Force Mode-Manual: " + this.config.inp_override_modemanual);
-
  
         //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         if (this.config.inp_eq3Controller_path.length == 0) {
-            this.log.info("## Python-Path emtpy, only Path-Check available");
+            this.log.info("## Expect-Path emtpy, only Path-Check available");
             bPreCheckErr = true;
         }
         this.log.info("Loaded " + this.config.getEQ3Devices.length + " eq3-Devices");
@@ -87,6 +86,7 @@ class Eq3Thermostat extends utils.Adapter {
                 await this.setObjectNotExists(sDevMAC+".name", { type: "state", common: { name: "name", role: "text", write: false, type: "string" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".plus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".minus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".boost", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
             }
         }
 
@@ -161,6 +161,8 @@ class Eq3Thermostat extends utils.Adapter {
                     state.val = state.val + updateStep;
                 } else if (stateName === "minus") {
                     state.val = state.val - updateStep;
+                } else if (stateName === "boost") {
+                    this.fSetBoost(aState[aState.length - 2],state.val);
                 }
             }
         } else {
@@ -235,7 +237,7 @@ class Eq3Thermostat extends utils.Adapter {
             //Set Timer for next Update
             tmr_EQ3Update = setTimeout(() =>this.fEQ3Update(),this.config.inp_refresh_interval * 60000);
 
-            //Get Information from EQ3 Devices via Python script for each device
+            //Get Information from EQ3 Devices via Expect script for each device
             for (let nDev = 0; nDev < this.config.getEQ3Devices.length; nDev++) {
                 // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
@@ -279,8 +281,8 @@ class Eq3Thermostat extends utils.Adapter {
                             execSync(sPath + " " + sDevMAC + " manual");
                         }
                     }
-                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection
-                    const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false];
+                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost
+                    const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false, jRes['mode']['boost']];
                     this.fUpdateDevObj(aValues, sDevMAC, sDevName);
                 }catch (e) {
                     this.log.error("Could not get Values for Device: \"" + sDevMAC + "\" ");
@@ -296,12 +298,13 @@ class Eq3Thermostat extends utils.Adapter {
     }
 
     fUpdateDevObj(aDevValues, sDevMAC, sDevName) {
-        //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection
+        //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost
         this.setStateAsync(sDevMAC+".temperature", { val: aDevValues[0], ack: true });
         this.setStateAsync(sDevMAC+".valve", { val: aDevValues[1], ack: true });
         this.setStateAsync(sDevMAC+".low_battery_alarm", { val: aDevValues[2], ack: true });
         this.setStateAsync(sDevMAC+".no_connection", { val: aDevValues[3], ack: true });
         this.setStateAsync(sDevMAC+".name", { val: sDevName, ack: true });
+        this.setStateAsync(sDevMAC+".boost", { val: aDevValues[4], ack: true });
     }
 
     fSetTemp(sDevMAC, sTemp) {
@@ -327,8 +330,35 @@ class Eq3Thermostat extends utils.Adapter {
                 this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
         }
     }
-}
 
+    fSetBoost(sDevMAC, bON) {
+        this.log.info("Set Boost to " + bON + " on Device  "+sDevMAC);
+        const sPath = this.config.inp_eq3Controller_path;
+        var retries = 3;
+        var success = false;
+        for (var i = 0; i < retries; i++) {
+            try {
+                if (bON) {
+                    const stdout = execSync(sPath + " " + sDevMAC + " boost");
+                }else{
+                    const stdout = execSync(sPath + " " + sDevMAC + " boost off");
+                }
+                this.log.info("Command result: " + stdout);
+                success = true;
+                break;
+            }catch (e) {
+                this.log.error("Command failed for MAC: " + sDevMAC);
+                this.log.error("-----------" + e);
+            }
+            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+        }
+        if (success) {
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
+        }else{
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
+        }
+    }
+}
 
 // @ts-ignore parent is a valid property on module
 if (module.parent) {

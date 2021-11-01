@@ -35,6 +35,7 @@ https://github.com/Schnup89/ioBroker.eq3-thermostat
 - Wird am Thermostat selbst die Temperatur verändert wird dies über eine zyklische Ausleseroutine ausgelesen und die states gesetzt
 - Einstellbarer Aktualisierungsintervall
 - Erzwungener Manuell-Modus
+- 5 Min-Boost-Funktion On/Off per Switch
 - Bluetooth-Scan im Admin-Panel
 - Verbindungsprobleme werden als state reported
 - Verbindungsversuch wird nach ca. 10 Sekunden abgebrochen
@@ -61,8 +62,9 @@ eq3-thermostat.-instanznummer-.-mac-adresse-
 
 | State-Name | Read/Write | Beschreibung |
 | ---------- | ---------- | ------------ |
-| last_cmd_failed  | Read  |  Wenn letzter Schreibvorgang (setzen der Temp) fehlgeschlagen ist = true |
-| low_battery_alarm  | Read  | Bei true ist der Batterie Alarm ausgelöst |
+| boost | Read & Write | Wenn "true" dann Boost=ON, "false" dann Boost=OFF, Status wird beim zyklischen einlesen aktualisiert, Boost ist 5 Minuten aktiv
+| last_cmd_failed | Read | Wenn letzter Schreibvorgang (setzen der Temp) fehlgeschlagen ist = true |
+| low_battery_alarm | Read | Bei true ist der Batterie Alarm ausgelöst |
 | name | Read | Name der im Admin-Panel dem Gerät vergeben wurde |
 | no_connection | Read | Wenn zyklischen Auslesen beim letzten mal fehlgeschlagen ist |
 | temperature | Read & Write | Temperatur in °C wird bei Auslesezyklus ausgelesen, kann auch gesetzt werden |
@@ -227,6 +229,9 @@ Font Size: 24
 
 
 ## Changelog
+
+### 2.0.5
+* (Schnup89) Added https://github.com/Schnup89/ioBroker.eq3-thermostat/issues/33 Boost-Switch
 
 ### 2.0.4
 * (Schnup89) Seperated "Connection Error" to "Connection Error" & "Connection Failed"
