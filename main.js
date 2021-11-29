@@ -144,7 +144,7 @@ class Eq3Thermostat extends utils.Adapter {
     onStateChange(id, state) {
         if (state) {
             //And only if it's not changed from this adapter
-            if (!(state.from == "system.adapter.eq3-thermostat.0")) {
+            if (state.from !== "system.adapter." + this.namespace) {
                 //And only on Temperature Change since this is the Only one implemented yet
                 const aState = id.split(".");
                 const stateName = aState[aState.length - 1].toString() //aState.len -1 = statename
@@ -187,8 +187,8 @@ class Eq3Thermostat extends utils.Adapter {
             if (obj.command === "findDevices") {
                 //TT, save Command Result true/false
                 try {
-                        var stdout = execSync("timeout -s INT 8s stdbuf -oL hcitool lescan").toString().replace(new RegExp('\r?\n','g'), '<br>');
-                }catch (e) {
+                    var stdout = execSync("timeout -s INT 8s stdbuf -oL hcitool lescan").toString().replace(new RegExp('\r?\n','g'), '<br>');
+                } catch (e) {
                         var stdout = "Error: " + e.stdout.toString().replace(new RegExp('\r?\n','g'), '<br>');
                 }
                 var aMacFound = stdout.split('<br>');
