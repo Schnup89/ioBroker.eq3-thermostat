@@ -11,6 +11,8 @@ const { execSync } = require("child_process");
 let exec;
 let tmr_EQ3Update = null;
 
+let ADAPTER = 'hci0';
+
 class Eq3Thermostat extends utils.Adapter {
 
     /**
@@ -60,7 +62,7 @@ class Eq3Thermostat extends utils.Adapter {
             this.log.info("Button step overwritten to: " + this.config.inp_button_step_size);
         }
         this.log.info("Force Mode-Manual: " + this.config.inp_override_modemanual);
- 
+
         //bPreCheckErr = true;   If this is not defined we do it! Dont stop :)
         if (this.config.inp_eq3Controller_path.length == 0) {
             this.log.info("## Expect-Path emtpy, only Path-Check available");
@@ -77,18 +79,27 @@ class Eq3Thermostat extends utils.Adapter {
                 // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
 
-                await this.setObjectNotExists(sDevMAC, { type: "device", common: { name: sDevMAC }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".temperature", { type: "state", common: { name: "temperature", role: "level.temperature", write: true, type: "number", unit: "°C", min: 5, max: 30 }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".valve", { type: "state", common: { name: "valve", role: "level", write: false, type: "number", unit: "%", min: 0, max: 100 }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".low_battery_alarm", { type: "state", common: { name: "low_battery_alarm", role: "indicator", write: false, type: "boolean" }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".no_connection", { type: "state", common: { name: "no_connection", role: "indicator", write: false, type: "boolean" }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".last_cmd_failed", { type: "state", common: { name: "last_cmd_failed", role: "indicator", write: false, type: "boolean" }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".name", { type: "state", common: { name: "name", role: "text", write: false, type: "string" }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".plus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".minus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
-                await this.setObjectNotExists(sDevMAC+".boost", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC, { type: 'device', common: { name: sDevMAC }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.temperature', { type: 'state', common: { name: 'temperature', role: 'level.temperature', read: true, write: true, type: 'number', unit: '°C', min: 5, max: 30 }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.day', { type: 'state', common: { name: 'day', role: 'value.temperature', read: true, write: true, type: 'number', unit: '°C', min: 5, max: 30 }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.night', { type: 'state', common: { name: 'night', role: 'value.temperature', read: true, write: true, type: 'number', unit: '°C', min: 5, max: 30 }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.valve', { type: 'state', common: { name: 'valve', role: 'level', read: true, write: false, type: 'number', unit: '%', min: 0, max: 100 }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.low_battery_alarm', { type: 'state', common: { name: 'low_battery_alarm', role: 'indicator', read: true, write: false, type: 'boolean' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.no_connection', { type: 'state', common: { name: 'no_connection', role: 'indicator', read: true, write: false, type: 'boolean' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.last_cmd_failed', { type: 'state', common: { name: 'last_cmd_failed', role: 'indicator', read: true, write: false, type: 'boolean' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.name', { type: 'state', common: { name: 'name', role: 'text', read: true, write: false, type: 'string' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.plus', { type: 'state', common: { name: 'plus', role: 'button', read: true, write: true, type: 'boolean' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.minus', { type: 'state', common: { name: 'minus', role: 'button', read: true, write: true, type: 'boolean' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.boost', { type: 'state', common: { name: 'boost', role: 'switch', read: true, write: true, type: 'boolean' }, native: {} });
+                await this.setObjectNotExists(sDevMAC+'.manual_interaction', { type: 'state', common: { name: 'manual_interaction', role: 'switch', read: true, write: false, type: 'boolean', def: false }, native: {} });
             }
         }
+
+        await this.setObjectNotExists('heating_season', { type: 'state', common: { name: 'heating_season', role: 'switch', read: true, write: true, type: 'boolean' }, native: {} });
+        await this.setObjectNotExists('limit_outdoor_temperature', { type: 'state', common: { name: 'limit_outdoor_temperature', role: 'value.temperature', read: true, write: true, type: 'number', unit: '°C' }, native: {} });
+        await this.setObjectNotExists('hci', { type: 'state', common: { name: 'hci', role: 'config', read: true, write: true, type: 'string', def: ADAPTER}, native: {} });
+        const state = await this.getStateAsync('hci');
+        if (state && state.val != null) ADAPTER = state.val;
 
 
         this.log.info("##### RUN ADAPTER ##### ");
@@ -250,7 +261,8 @@ class Eq3Thermostat extends utils.Adapter {
 
                 try {
                     try {
-                        var stdout = execSync(sPath + " " + sDevMAC + " json").toString();
+                        this.log.debug(sPath + " " + ADAPTER + " " + sDevMAC + " json");
+                        var stdout = execSync(sPath + " " + ADAPTER + " " + sDevMAC + " json").toString();
                     } catch (e) {
                         if (e.stdout.indexOf("Connection failed") >= 0) {
                             this.log.error("Connection Failed for MAC: " + sDevMAC);
@@ -278,7 +290,7 @@ class Eq3Thermostat extends utils.Adapter {
                         if (!jRes['mode']['manual']) {   //If Mode is not manual
                             //Set manual mode ! Dont check result, it's not critical, we have no time in this for-loop
                             this.log.info("Wrong Mode detected, changing to Manual-Mode for Device: \"" + sDevMAC + "\" ");
-                            execSync(sPath + " " + sDevMAC + " manual");
+                            execSync(sPath + " " + ADAPTER + " " + sDevMAC + " manual");
                         }
                     }
                     //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost
@@ -314,7 +326,7 @@ class Eq3Thermostat extends utils.Adapter {
         var success = false;
         for (var i = 0; i < retries; i++) {
             try {
-                const stdout = execSync(sPath + " " + sDevMAC + " temp " + sTemp);
+                const stdout = execSync(sPath + " " + ADAPTER + " " + sDevMAC + " temp " + sTemp);
                 this.log.info("Command result: " + stdout);
                 success = true;
                 break;
@@ -339,9 +351,9 @@ class Eq3Thermostat extends utils.Adapter {
         for (var i = 0; i < retries; i++) {
             try {
                 if (bON) {
-                    const stdout = execSync(sPath + " " + sDevMAC + " boost");
+                    const stdout = execSync(sPath + " " + ADAPTER + " " + sDevMAC + " boost");
                 }else{
-                    const stdout = execSync(sPath + " " + sDevMAC + " boost off");
+                    const stdout = execSync(sPath + " " + ADAPTER + " " + sDevMAC + " boost off");
                 }
                 this.log.info("Command result: " + stdout);
                 success = true;
