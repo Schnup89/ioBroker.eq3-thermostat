@@ -426,7 +426,7 @@ class Eq3Thermostat extends utils.Adapter {
     }
 
     fSetON(sDevMAC, bON) {
-        this.log.info("Set ON/OFF to " + bLocked + " on Device  "+sDevMAC);
+        this.log.info("Set ON/OFF to " + bON + " on Device  "+sDevMAC);
         const sPath = this.config.inp_eq3Controller_path;
         var retries = 3;
         var success = false;
