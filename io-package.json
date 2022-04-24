@@ -110,6 +110,7 @@
                 "es": "estado activado/desactivado añadido",
                 "pl": "dodano stan włączenia/wyłączenia",
                 "zh-cn": "添加开/关状态"
+            }
         },
         "title": "eq3-Thermostat",
         "titleLang": {
