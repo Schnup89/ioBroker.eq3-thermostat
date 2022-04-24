@@ -61,7 +61,15 @@ systemDictionary = {
     },
     "lab_eq3Controller_path_long": {
         "en": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
-        "de": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  z.B. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp"
+        "de": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  z.B. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "ru": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "pt": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "nl": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "fr": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "it": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "es": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "pl": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp",
+        "zh-cn": "<a href=\"https://github.com/Heckie75/eQ-3-radiator-thermostat/blob/master/eq3.exp\" target=\"_blank\">eq3.exp</a>   |  e.g. expect /opt/iobroker/node_modules/iobroker.eq3-thermostat/eq3.exp"
     },
     "btn_checkPath": {
         "en": "Check Path",
@@ -150,6 +158,14 @@ systemDictionary = {
     "text_devices": {
         "en": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
         "de": "Hier fügst du \r deine eq3-Geräte hinzu, die du steuern möchtest. <br> 1. eq3-Gerät starten. Immer nur eines, da der Bluetooth Name bei allen Geräten gleich ist. (CC-RT-BLE) <br> 2. Führe das Kommando \"sudo hcitool lescan\" auf der Konsole aus. <br> 3. Mit der + Knopf eine neue Zeile einfügen und die MAC-Adresse setzen.",
+        "ru": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "pt": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "nl": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "fr": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "it": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "es": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "pl": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button",
+        "zh-cn": "Add your eq3-Devices, which you want to control. <br> 1. Power on eq3-Device. Only one at a time they have all the same Bluetooth-Name (CC-RT-BLE) <br> 2. Get the MAC-Address with the Command \"sudo hcitool lescan\" <br> 3. Add Device with the + Button"
     },
     "text_devices_loading": {
         "en": "Loading, please wait for 10 seconds... <br> Found Devices will be displayed here one finished!",
