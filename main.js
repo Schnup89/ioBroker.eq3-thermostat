@@ -87,6 +87,8 @@ class Eq3Thermostat extends utils.Adapter {
                 await this.setObjectNotExists(sDevMAC+".plus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".minus", { type: "state", common: { name: "name", role: "button", write: true, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".boost", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".modeauto", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".locked", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
             }
         }
 
@@ -163,6 +165,10 @@ class Eq3Thermostat extends utils.Adapter {
                     state.val = state.val - updateStep;
                 } else if (stateName === "boost") {
                     this.fSetBoost(aState[aState.length - 2],state.val);
+                } else if (stateName === "modeauto") {
+                    this.fSetMode(aState[aState.length - 2],state.val);
+                } else if (stateName === "locked") {
+                    this.fSetLocked(aState[aState.length - 2],state.val);
                 }
             }
         } else {
@@ -213,7 +219,6 @@ class Eq3Thermostat extends utils.Adapter {
                 return true;
             }else{
                 this.log.info("check Failed! Response doesn't match expected output");  //Expected Connection Failed
-                this.log.info("check Failed! Response: " + sCmdRes);
             return false;
             }
         }catch (e) {
@@ -281,8 +286,8 @@ class Eq3Thermostat extends utils.Adapter {
                             execSync(sPath + " " + sDevMAC + " manual");
                         }
                     }
-                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost
-                    const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false, jRes['mode']['boost']];
+                    //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost | 5 = modeauto | 6 = locked 
+                    const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false, jRes['mode']['boost'], !jRes['mode']['manual'], !jRes['mode']['locked']];
                     this.fUpdateDevObj(aValues, sDevMAC, sDevName);
                 }catch (e) {
                     this.log.error("Could not get Values for Device: \"" + sDevMAC + "\" ");
@@ -298,13 +303,15 @@ class Eq3Thermostat extends utils.Adapter {
     }
 
     fUpdateDevObj(aDevValues, sDevMAC, sDevName) {
-        //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost
+        //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost | 5 = modeauto | 6 = locked   
         this.setStateAsync(sDevMAC+".temperature", { val: aDevValues[0], ack: true });
         this.setStateAsync(sDevMAC+".valve", { val: aDevValues[1], ack: true });
         this.setStateAsync(sDevMAC+".low_battery_alarm", { val: aDevValues[2], ack: true });
         this.setStateAsync(sDevMAC+".no_connection", { val: aDevValues[3], ack: true });
         this.setStateAsync(sDevMAC+".name", { val: sDevName, ack: true });
         this.setStateAsync(sDevMAC+".boost", { val: aDevValues[4], ack: true });
+        this.setStateAsync(sDevMAC+".modeauto", { val: aDevValues[5], ack: true });
+        this.setStateAsync(sDevMAC+".locked", { val: aDevValues[6], ack: true });
     }
 
     fSetTemp(sDevMAC, sTemp) {
@@ -342,6 +349,62 @@ class Eq3Thermostat extends utils.Adapter {
                     const stdout = execSync(sPath + " " + sDevMAC + " boost");
                 }else{
                     const stdout = execSync(sPath + " " + sDevMAC + " boost off");
+                }
+                this.log.info("Command result: " + stdout);
+                success = true;
+                break;
+            }catch (e) {
+                this.log.error("Command failed for MAC: " + sDevMAC);
+                this.log.error("-----------" + e);
+            }
+            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+        }
+        if (success) {
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
+        }else{
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
+        }
+    }
+
+    fSetMode(sDevMAC, bModeAuto) {
+        this.log.info("Set Auto-Mode to " + bModeAuto + " on Device  "+sDevMAC);
+        const sPath = this.config.inp_eq3Controller_path;
+        var retries = 3;
+        var success = false;
+        for (var i = 0; i < retries; i++) {
+            try {
+                if (bModeAuto) {
+                    const stdout = execSync(sPath + " " + sDevMAC + " auto");
+                }else{
+                    const stdout = execSync(sPath + " " + sDevMAC + " manual");
+                }
+                this.log.info("Command result: " + stdout);
+                success = true;
+                break;
+            }catch (e) {
+                this.log.error("Command failed for MAC: " + sDevMAC);
+                this.log.error("-----------" + e);
+            }
+            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+        }
+        if (success) {
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
+        }else{
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
+        }
+    }
+
+    fSetLocked(sDevMAC, bLocked) {
+        this.log.info("Set Locked to " + bLocked + " on Device  "+sDevMAC);
+        const sPath = this.config.inp_eq3Controller_path;
+        var retries = 3;
+        var success = false;
+        for (var i = 0; i < retries; i++) {
+            try {
+                if (bLocked) {
+                    const stdout = execSync(sPath + " " + sDevMAC + " lock");
+                }else{
+                    const stdout = execSync(sPath + " " + sDevMAC + " unlock");
                 }
                 this.log.info("Command result: " + stdout);
                 success = true;

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "eq3-thermostat",
-        "version": "2.0.5",
+        "version": "2.0.6",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -86,6 +86,18 @@
                 "es": "interruptor de impulso añadido",
                 "pl": "dodano przełącznik doładowania",
                 "zh-cn": "添加升压开关"
+            },
+            "2.0.6": {
+                "en": "added mode-switch and locked-switch",
+                "de": "Mode-Switch und Locked-Switch hinzugefügt",
+                "ru": "добавлен переключатель режима и переключатель блокировки",
+                "pt": "adicionado interruptor de modo e interruptor bloqueado",
+                "nl": "toegevoegde modusschakelaar en vergrendelde schakelaar",
+                "fr": "ajout d'un commutateur de mode et d'un commutateur verrouillé",
+                "it": "aggiunto interruttore di modalità e interruttore bloccato",
+                "es": "interruptor de modo agregado e interruptor bloqueado",
+                "pl": "dodano przełącznik trybu i przełącznik blokady",
+                "zh-cn": "添加了模式开关和锁定开关"
             }
         },
         "title": "eq3-Thermostat",
