@@ -76,6 +76,7 @@ eq3-thermostat.-instanznummer-.-mac-adresse-
 | valve | Read | Ventilstellung in % |
 | modeauto | Read & Write | Wenn "true" dann Modus=Auto, "false" dann Modus=Manual, Status wird beim zyklischen einlesen aktualisiert |
 | locked | Read & Write | Wenn "true" dann Thermostat=Locked, "false" dann Thermostat=Unlocked, Status wird beim zyklischen einlesen aktualisiert |
+| seton | Write | Wenn "true" setzt den Thermostat auf 30°C, "false" setzt den Thermostat auf 4.5°C |
 
 
 
@@ -236,6 +237,10 @@ Font Size: 24
 
 
 ## Changelog
+
+### 2.0.7
+* (Schnup89) Added https://github.com/Schnup89/ioBroker.eq3-thermostat/issues/52 
+Set Thermostat ON/OFF (seton)
 
 ### 2.0.6
 * (Schnup89) Added https://github.com/Schnup89/ioBroker.eq3-thermostat/issues/52 

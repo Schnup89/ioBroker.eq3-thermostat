@@ -205,7 +205,6 @@ systemDictionary = {
     },
     "eq3MAC": {
         "en": "eq3 MAC-Address",
-        "en": "eq3 MAC-Address",
         "de": "eq3 MAC-Address",
         "ru": "eq3 MAC-Address",
         "pt": "eq3 MAC-Address",

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "eq3-thermostat",
-        "version": "2.0.6",
+        "version": "2.0.7",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -98,7 +98,18 @@
                 "es": "interruptor de modo agregado e interruptor bloqueado",
                 "pl": "dodano przełącznik trybu i przełącznik blokady",
                 "zh-cn": "添加了模式开关和锁定开关"
-            }
+            },
+            "2.0.7": {
+                "en": "added on/off state",
+                "de": "Ein/Aus-Zustand hinzugefügt",
+                "ru": "добавлено состояние включения/выключения",
+                "pt": "adicionado estado ligado/desligado",
+                "nl": "toegevoegde aan/uit-status",
+                "fr": "état marche/arrêt ajouté",
+                "it": "stato di attivazione/disattivazione aggiunto",
+                "es": "estado activado/desactivado añadido",
+                "pl": "dodano stan włączenia/wyłączenia",
+                "zh-cn": "添加开/关状态"
         },
         "title": "eq3-Thermostat",
         "titleLang": {

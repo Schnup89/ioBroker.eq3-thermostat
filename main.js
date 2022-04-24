@@ -89,6 +89,7 @@ class Eq3Thermostat extends utils.Adapter {
                 await this.setObjectNotExists(sDevMAC+".boost", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".modeauto", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
                 await this.setObjectNotExists(sDevMAC+".locked", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
+                await this.setObjectNotExists(sDevMAC+".seton", { type: "state", common: { name: "name", role: "switch", write: true, type: "boolean" }, native: {} });
             }
         }
 
@@ -169,6 +170,8 @@ class Eq3Thermostat extends utils.Adapter {
                     this.fSetMode(aState[aState.length - 2],state.val);
                 } else if (stateName === "locked") {
                     this.fSetLocked(aState[aState.length - 2],state.val);
+                } else if (stateName === "seton") {
+                    this.fSetON(aState[aState.length - 2],state.val);
                 }
             }
         } else {
@@ -405,6 +408,34 @@ class Eq3Thermostat extends utils.Adapter {
                     const stdout = execSync(sPath + " " + sDevMAC + " lock");
                 }else{
                     const stdout = execSync(sPath + " " + sDevMAC + " unlock");
+                }
+                this.log.info("Command result: " + stdout);
+                success = true;
+                break;
+            }catch (e) {
+                this.log.error("Command failed for MAC: " + sDevMAC);
+                this.log.error("-----------" + e);
+            }
+            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+        }
+        if (success) {
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
+        }else{
+                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
+        }
+    }
+
+    fSetON(sDevMAC, bON) {
+        this.log.info("Set ON/OFF to " + bLocked + " on Device  "+sDevMAC);
+        const sPath = this.config.inp_eq3Controller_path;
+        var retries = 3;
+        var success = false;
+        for (var i = 0; i < retries; i++) {
+            try {
+                if (bON) {
+                    const stdout = execSync(sPath + " " + sDevMAC + " on");
+                }else{
+                    const stdout = execSync(sPath + " " + sDevMAC + " off");
                 }
                 this.log.info("Command result: " + stdout);
                 success = true;
