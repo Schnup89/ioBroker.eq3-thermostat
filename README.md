@@ -17,7 +17,9 @@
 Adapter zur Anbindung von eq3-Thermostaten via Bluetooth
 
 Mit diesem Adapter ist es möglich Informationen aus den Thermostaten auszulesen und die Soll-Temperatur zu setzen.
-Voraussetzung ist das Programm Expect und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funktion (BTLE).
+Voraussetzung ist das Programm Expect und eine Bluetooth-Adapter inkl. Bluetooth-LowEnergy Funktion (BTLE).  
+  
+<i>Ich empfehle außerhalb der Heizzeit die Instanz zu deaktivieren um die Batterien der Thermostate nicht unnötig zu belasten.</i>
 
 ## Installation
 
