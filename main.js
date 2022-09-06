@@ -11,6 +11,8 @@ const { execSync } = require("child_process");
 let exec;
 let tmr_EQ3Update = null;
 
+const SLEEP_TIME = 1000;
+
 class Eq3Thermostat extends utils.Adapter {
 
     /**
@@ -246,6 +248,7 @@ class Eq3Thermostat extends utils.Adapter {
             tmr_EQ3Update = setTimeout(() =>this.fEQ3Update(),this.config.inp_refresh_interval * 60000);
 
             //Get Information from EQ3 Devices via Expect script for each device
+            device_loop:
             for (let nDev = 0; nDev < this.config.getEQ3Devices.length; nDev++) {
                 // @ts-ignore
                 const sDevMAC = this.config.getEQ3Devices[nDev].eq3MAC;
@@ -253,21 +256,29 @@ class Eq3Thermostat extends utils.Adapter {
                 const sDevName = this.config.getEQ3Devices[nDev].eq3Name;
                 const sPath = this.config.inp_eq3Controller_path;
                 if (nDev > 0) {
-                    this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+                    this.sleep(SLEEP_TIME);  //Sleep blocking 1 Sec between bluetooth calls
                 }
 
                 try {
-                    try {
-                        var stdout = execSync(sPath + " " + sDevMAC + " json").toString();
-                    } catch (e) {
-                        if (e.stdout.indexOf("Connection failed") >= 0) {
-                            this.log.error("Connection Failed for MAC: " + sDevMAC);
-                            this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
-                            continue;
+                    let iterationStep = 0;
+                    let stdout = '';
+                    while (iterationStep < 4) {
+                        try {
+                            stdout = execSync(sPath + " " + sDevMAC + " json").toString();
+                            break;
+                        } catch (e) {
+                            if (e.stdout.indexOf("Connection failed") !== -1 && iterationStep === 3) {
+                                this.log.error("Connection Failed for MAC: " + sDevMAC);
+                                this.setStateAsync(sDevMAC + ".no_connection", {val: true, ack: true});
+                                continue device_loop;
+                            }
                         }
+                        iterationStep++;
+                        this.sleep(SLEEP_TIME);
                     }
+                    let jRes = '';
                     try {
-                        JSON.parse(stdout);
+                        jRes = JSON.parse(stdout);
                     } catch (e) {
                         this.log.error("No valid JSON for MAC: " + sDevMAC);
                         this.log.debug("error Message: " + e);
@@ -275,7 +286,6 @@ class Eq3Thermostat extends utils.Adapter {
                         this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
                         continue;
                     }
-                    const jRes = JSON.parse(stdout);
                     if (jRes.hasOwnProperty('error')) {
                         this.log.error("Connection Error for MAC: " + sDevMAC);
                         this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
@@ -292,13 +302,13 @@ class Eq3Thermostat extends utils.Adapter {
                     //0 = Temperature | 1 = Valve | 2 = LowBattaryAlarm | 3 = NoConnection | 4 = Boost | 5 = modeauto | 6 = locked 
                     const aValues = [jRes['temperature'], jRes['valve'], jRes['mode']['low battery'], false, jRes['mode']['boost'], !jRes['mode']['manual'], !jRes['mode']['locked']];
                     this.fUpdateDevObj(aValues, sDevMAC, sDevName);
-                }catch (e) {
+                } catch (e) {
                     this.log.error("Could not get Values for Device: \"" + sDevMAC + "\" ");
                     this.log.error("-----------\"" + e);
                     this.setStateAsync(sDevMAC+".no_connection", { val: true, ack: true });
                 }
             }
-        }else{
+        } else {
             //No Devices No Timer
             clearInterval(tmr_EQ3Update);
             tmr_EQ3Update = null;
@@ -319,54 +329,34 @@ class Eq3Thermostat extends utils.Adapter {
 
     fSetTemp(sDevMAC, sTemp) {
         this.log.info("Set " + sTemp + "°C on Device  "+sDevMAC);
-        const sPath = this.config.inp_eq3Controller_path;
-        var retries = 3;
-        var success = false;
-        for (var i = 0; i < retries; i++) {
-            try {
-                const stdout = execSync(sPath + " " + sDevMAC + " temp " + sTemp);
-                this.log.info("Command result: " + stdout);
-                success = true;
-                break;
-            }catch (e) {
-                this.log.error("Command failed for MAC: " + sDevMAC);
-                this.log.error("-----------" + e);
-            }
-            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
-        }
-        if (success) {
-                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
-        }else{
-                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
-        }
+        this.fSet(sDevMAC, "temp " + sTemp)
     }
 
     fSetBoost(sDevMAC, bON) {
         this.log.info("Set Boost to " + bON + " on Device  "+sDevMAC);
+        this.fSet(sDevMAC, bON ? "boost" : "boost off")
+    }
+
+    fSet(sDevMAC, sSuffix) {
         const sPath = this.config.inp_eq3Controller_path;
-        var retries = 3;
-        var success = false;
-        for (var i = 0; i < retries; i++) {
+        let failed = true;
+        let iterationStep = 0
+        while (iterationStep < 4) {
             try {
-                if (bON) {
-                    const stdout = execSync(sPath + " " + sDevMAC + " boost");
-                }else{
-                    const stdout = execSync(sPath + " " + sDevMAC + " boost off");
-                }
+                const stdout = execSync(sPath + " " + sDevMAC + " " + sSuffix);
                 this.log.info("Command result: " + stdout);
-                success = true;
+                failed = false;
                 break;
-            }catch (e) {
-                this.log.error("Command failed for MAC: " + sDevMAC);
-                this.log.error("-----------" + e);
+            } catch (e) {
+                if (iterationStep === 3) {
+                    this.log.error("Command failed 3 times for MAC: " + sDevMAC);
+                    this.log.error("-----------" + e);
+                }
             }
-            this.sleep(1000);  //Sleep blocking 1 Sec between bluetooth calls
+            iterationStep++;
+            this.sleep(SLEEP_TIME);  //Sleep blocking 1 Sec between bluetooth calls
         }
-        if (success) {
-                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: false, ack: true });
-        }else{
-                this.setStateAsync(sDevMAC+".last_cmd_failed", { val: true, ack: true });
-        }
+        this.setStateAsync(sDevMAC+".last_cmd_failed", { val: failed, ack: true });
     }
 
     fSetMode(sDevMAC, bModeAuto) {
